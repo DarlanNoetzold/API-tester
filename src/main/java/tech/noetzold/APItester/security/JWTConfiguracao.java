@@ -1,4 +1,4 @@
-package tech.noetzold.spyware.security;
+package tech.noetzold.APItester.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import tech.noetzold.spyware.service.DetalheUsuarioServiceImpl;
+import tech.noetzold.APItester.service.DetalheUsuarioServiceImpl;
 
 
 @EnableWebSecurity

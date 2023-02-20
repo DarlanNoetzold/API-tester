@@ -1,4 +1,4 @@
-package tech.noetzold.spyware.security;
+package tech.noetzold.APItester.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
