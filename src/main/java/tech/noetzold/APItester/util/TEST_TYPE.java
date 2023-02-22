@@ -1,0 +1,6 @@
+package tech.noetzold.APItester.util;
+
+public enum TEST_TYPE {
+    COMMAND_INJECTION, DATA_VALIDATION, SQL_INJECTION, XSS_INJECTION, SECURITY
+
+}
