@@ -34,8 +34,8 @@ public class CommandInjectionTest extends BaseTest{
         return success(TEST_TYPE.COMMAND_INJECTION);
     }
 
-    public void testPostCommandInjection(RequestSpecification request) {
-        Response response = request.param("name", "&& echo 'Hello World' &&").post("/endpoint");
+    public void testPostCommandInjection(RequestSpecification request, String url) {
+        Response response = request.param("name", "&& echo 'Hello World' &&").post(url);
         int statusCode = response.getStatusCode();
 
         if (statusCode == 200) {
