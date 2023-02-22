@@ -2,8 +2,6 @@ package tech.noetzold.APItester.controller;
 
 
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,27 +13,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 
-import io.restassured.RestAssured;
-import tech.noetzold.APItester.model.Requisition;
+import tech.noetzold.APItester.model.TestGetRequisition;
 import tech.noetzold.APItester.model.Result;
-import tech.noetzold.APItester.service.RequisitionService;
+import tech.noetzold.APItester.service.TestGetRequisitionService;
 import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.tests.*;
-import tech.noetzold.APItester.util.REQ_TYPE;
-import tech.noetzold.APItester.util.TEST_TYPE;
 
 @RestController
-@RequestMapping("/api")
-public class RequisitionController {
+@RequestMapping("/get")
+public class TestGetRequisitionController {
 
     @Autowired
-    RequisitionService requisitionService;
+    TestGetRequisitionService testGetRequisitionService;
 
     @Autowired
     ResultService resultService;
 
-    @GetMapping("/get-request")
-    public ResponseEntity<Requisition> testEndpoint(
+    @GetMapping("/test")
+    public ResponseEntity<TestGetRequisition> testGetEndpoint(
             @RequestParam("url") String url,
             @RequestParam(value = "headers", required = false) Map<String, String> headers,
             @RequestParam(value = "params", required = false) Map<String, String> params
@@ -51,6 +46,14 @@ public class RequisitionController {
             request.params(params);
         }
 
+        List<Result> testsResults = callTestsAndReturnResults(request,url,params);
+
+        TestGetRequisition req = testGetRequisitionService.saveService(new TestGetRequisition(params, Calendar.getInstance(), testsResults));
+
+        return ResponseEntity.status(HttpStatus.OK).body(req);
+    }
+
+    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, String> params){
         List<Result> testsResults = new ArrayList<>();
 
         SecurityTest securityTest = new SecurityTest();
@@ -68,8 +71,7 @@ public class RequisitionController {
         DataValidationTest dataValidationTest = new DataValidationTest();
         testsResults.add(resultService.saveService(dataValidationTest.testDataValidation(url, request, params)));
 
-        Requisition req = requisitionService.saveService(new Requisition(params, REQ_TYPE.GET, Calendar.getInstance(), testsResults));
+        return testsResults;
 
-        return ResponseEntity.status(HttpStatus.OK).body(req);
     }
 }

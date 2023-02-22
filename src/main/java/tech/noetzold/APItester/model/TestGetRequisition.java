@@ -3,7 +3,6 @@ package tech.noetzold.APItester.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tech.noetzold.APItester.util.REQ_TYPE;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -15,30 +14,24 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name="Requisition")
-public class Requisition implements Serializable {
+@Entity(name="test_get_requisition")
+public class TestGetRequisition implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String body;
-
     private String parameters;
 
-    @NotNull
-    private REQ_TYPE req_type;
-
     @Temporal(TemporalType.DATE)
-    @Column(name = "data_cadastro", nullable = false)
+    @Column(name = "date_request", nullable = false)
     private Calendar date_request;
 
     @OneToMany(cascade=CascadeType.PERSIST)
     private List<Result> result;
 
-    public Requisition(Map<String, String> parameters, REQ_TYPE req_type, Calendar date_request, List<Result> result) {
+    public TestGetRequisition(Map<String, String> parameters, Calendar date_request, List<Result> result) {
         this.parameters = parameters.toString();
-        this.req_type = req_type;
         this.date_request = date_request;
         this.result = result;
     }
