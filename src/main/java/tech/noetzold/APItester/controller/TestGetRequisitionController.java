@@ -57,19 +57,19 @@ public class TestGetRequisitionController {
         List<Result> testsResults = new ArrayList<>();
 
         SecurityTest securityTest = new SecurityTest();
-        testsResults.add(resultService.saveService(securityTest.testSecureResponse(request, url)));
+        testsResults.add(resultService.saveService(securityTest.testGetSecureResponse(request, url)));
 
         SqlInjectionTest sqlInjectionTest = new SqlInjectionTest();
-        testsResults.add(resultService.saveService(sqlInjectionTest.testSqlInjection(url, request, params)));
+        testsResults.add(resultService.saveService(sqlInjectionTest.testGetSqlInjection(url, request, params)));
 
         CommandInjectionTest commandInjectionTest = new CommandInjectionTest();
-        testsResults.add(resultService.saveService(commandInjectionTest.testCommandInjection(url, request, params)));
+        testsResults.add(resultService.saveService(commandInjectionTest.testGetCommandInjection(url, request, params)));
 
         XssTest xssTest = new XssTest();
-        testsResults.add(resultService.saveService(xssTest.testXss(url, request, params)));
+        testsResults.add(resultService.saveService(xssTest.testGetXss(url, request, params)));
 
         DataValidationTest dataValidationTest = new DataValidationTest();
-        testsResults.add(resultService.saveService(dataValidationTest.testDataValidation(url, request, params)));
+        testsResults.add(resultService.saveService(dataValidationTest.testGetDataValidation(url, request, params)));
 
         return testsResults;
 
