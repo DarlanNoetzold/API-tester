@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name="User")
+@Entity(name="user_test")
 public class User implements Serializable {
 
     @Id
