@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class SqlInjectionTest extends BaseTest {
 
-    public Result testSqlInjection(String url, RequestSpecification request, Map<String,String> params) {
+    public Result testGetSqlInjection(String url, RequestSpecification request, Map<String,String> params) {
         if(params == null) return null;
         String payload = "' or 1=1 --";
         for (Map.Entry<String,String> pair : params.entrySet())

@@ -5,12 +5,11 @@ import io.restassured.specification.RequestSpecification;
 import tech.noetzold.APItester.model.Result;
 import tech.noetzold.APItester.util.TEST_TYPE;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class DataValidationTest extends BaseTest {
 
-    public Result testDataValidation(String url, RequestSpecification request, Map<String,String> params) {
+    public Result testGetDataValidation(String url, RequestSpecification request, Map<String,String> params) {
         if(params == null) return null;
         String payload = "foo";
         for (Map.Entry<String,String> pair : params.entrySet())

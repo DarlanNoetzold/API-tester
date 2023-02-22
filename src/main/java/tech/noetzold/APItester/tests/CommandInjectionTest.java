@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class CommandInjectionTest extends BaseTest{
 
-    public Result testCommandInjection(String url, RequestSpecification request, Map<String,String> params) {
+    public Result testGetCommandInjection(String url, RequestSpecification request, Map<String,String> params) {
         if(params == null) return null;
         String payload = "||ls";
         for (Map.Entry<String,String> pair : params.entrySet())
@@ -32,5 +32,16 @@ public class CommandInjectionTest extends BaseTest{
         }
 
         return success(TEST_TYPE.COMMAND_INJECTION);
+    }
+
+    public void testPostCommandInjection(RequestSpecification request) {
+        Response response = request.param("name", "&& echo 'Hello World' &&").post("/endpoint");
+        int statusCode = response.getStatusCode();
+
+        if (statusCode == 200) {
+            System.out.println("Test failed! Command Injection may be possible.");
+        } else {
+            System.out.println("Test passed! Command Injection is not possible.");
+        }
     }
 }

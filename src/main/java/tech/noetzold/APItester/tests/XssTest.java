@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class XssTest extends BaseTest {
 
-    public Result testXss(String url, RequestSpecification request, Map<String,String> params) {
+    public Result testGetXss(String url, RequestSpecification request, Map<String,String> params) {
         if(params == null) return null;
         String payload = "<script>alert(1)</script>";
         for (Map.Entry<String,String> pair : params.entrySet())
