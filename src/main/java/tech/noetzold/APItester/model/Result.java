@@ -3,7 +3,7 @@ package tech.noetzold.APItester.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tech.noetzold.APItester.util.REQ_STATUS;
+import tech.noetzold.APItester.util.TEST_TYPE;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,8 +23,15 @@ public class Result implements Serializable {
     private Integer id;
 
     @NotNull
-    private REQ_STATUS req_status;
+    private TEST_TYPE test_type;
 
     @NotNull
     private String details;
+
+
+
+    public Result(TEST_TYPE test_type, String message) {
+        this.test_type = test_type;
+        this.details = message;
+    }
 }
