@@ -33,4 +33,31 @@ public class XssTest extends BaseTest {
 
         return success(TEST_TYPE.XSS_INJECTION);
     }
+
+    public Result testPostXss(String url, RequestSpecification request, Map<String,String> params, String body) {
+        if(params == null) return null;
+        String payload = "<script>alert(1)</script>";
+        for (Map.Entry<String,String> pair : params.entrySet())
+            pair.setValue(payload);
+        Response response = request
+                .params(params)
+                .when()
+                .body(body)
+                .post(url)
+                .then()
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        int statusCode = response.getStatusCode();
+        if (responseBody.contains(payload)) {
+            return fail(TEST_TYPE.XSS_INJECTION,"XSS vulnerability found in parameter " + params.toString() + " with payload " + payload);
+        }
+        if (statusCode >= 500) {
+            return fail(TEST_TYPE.XSS_INJECTION,"Server error: " + statusCode);
+        }
+
+        return success(TEST_TYPE.XSS_INJECTION);
+    }
+
 }
