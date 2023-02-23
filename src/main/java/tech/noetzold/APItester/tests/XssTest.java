@@ -35,10 +35,10 @@ public class XssTest extends BaseTest {
         return success(TEST_TYPE.XSS_INJECTION);
     }
 
-    public Result testPostXss(RequestSpecification request, String url, Map<String,String> body, HttpHeaders headers) {
+    public Result testPostXss(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
         if(body == null) return null;
         String payload = "<script>alert(1)</script>";
-        for (Map.Entry<String,String> pair : body.entrySet())
+        for (Map.Entry<String,Object> pair : body.entrySet())
             pair.setValue(payload);
         Response response = request
                 .when()

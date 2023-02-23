@@ -45,7 +45,7 @@ public class SqlInjectionTest extends BaseTest {
         return success(TEST_TYPE.SQL_INJECTION);
     }
 
-    public Result testPostSqlInjection(RequestSpecification request, String url, Map<String,String> body, HttpHeaders headers) {
+    public Result testPostSqlInjection(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
         if (body == null) return null;
         String payload = "' or 1=1 --";
         try {
@@ -55,7 +55,7 @@ public class SqlInjectionTest extends BaseTest {
         }
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
-        for (Map.Entry<String, String> pair : body.entrySet()) {
+        for (Map.Entry<String, Object> pair : body.entrySet()) {
             uriBuilder.queryParam(pair.getKey(), payload);
         }
 

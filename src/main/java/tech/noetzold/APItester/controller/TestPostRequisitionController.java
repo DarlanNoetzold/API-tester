@@ -10,11 +10,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.noetzold.APItester.model.Result;
 import tech.noetzold.APItester.model.TestPostRequisition;
 import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.service.TestPostRequisitionService;
-import tech.noetzold.APItester.tests.CommandInjectionTest;
+import tech.noetzold.APItester.tests.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -41,5 +44,27 @@ public class TestPostRequisitionController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(testPostRequisition);
+    }
+
+    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, Object> body, HttpHeaders headers){
+        List<Result> testsResults = new ArrayList<>();
+
+        SecurityTest securityTest = new SecurityTest();
+        testsResults.add(resultService.saveService(securityTest.testPostSecureResponse(request, url, body, headers)));
+
+        SqlInjectionTest sqlInjectionTest = new SqlInjectionTest();
+        testsResults.add(resultService.saveService(sqlInjectionTest.testPostSqlInjection(request, url, body, headers)));
+
+        CommandInjectionTest commandInjectionTest = new CommandInjectionTest();
+        testsResults.add(resultService.saveService(commandInjectionTest.testPostCommandInjection(request, url, body, headers)));
+
+        XssTest xssTest = new XssTest();
+        testsResults.add(resultService.saveService(xssTest.testPostXss(request, url, body, headers)));
+
+        DataValidationTest dataValidationTest = new DataValidationTest();
+        testsResults.add(resultService.saveService(dataValidationTest.testPostDataValidation(request, url, body, headers)));
+
+        return testsResults;
+
     }
 }
