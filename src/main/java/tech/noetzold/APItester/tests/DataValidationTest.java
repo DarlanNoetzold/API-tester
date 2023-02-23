@@ -2,6 +2,7 @@ package tech.noetzold.APItester.tests;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.springframework.http.HttpHeaders;
 import tech.noetzold.APItester.model.Result;
 import tech.noetzold.APItester.util.TEST_TYPE;
 
@@ -34,16 +35,16 @@ public class DataValidationTest extends BaseTest {
         return success(TEST_TYPE.DATA_VALIDATION);
     }
 
-    public Result testPostDataValidation(String url, RequestSpecification request, Map<String,String> params, String body) {
-        if(params == null) return null;
+    public Result testPostDataValidation(RequestSpecification request, String url, Map<String,String> body, HttpHeaders headers) {
+        if(body == null) return null;
         String payload = "foo";
-        for (Map.Entry<String,String> pair : params.entrySet())
+        for (Map.Entry<String,String> pair : body.entrySet())
             pair.setValue(payload);
 
         Response response = request
-                .params(params)
                 .when()
                 .body(body)
+                .headers(headers)
                 .post(url)
                 .then()
                 .extract()
@@ -52,7 +53,7 @@ public class DataValidationTest extends BaseTest {
         String responseBody = response.getBody().asString();
         int statusCode = response.getStatusCode();
         if (!responseBody.contains(payload)) {
-            return fail(TEST_TYPE.DATA_VALIDATION, "Data validation failed in parameter " + params.toString() + " with payload " + payload);
+            return fail(TEST_TYPE.DATA_VALIDATION, "Data validation failed in parameter " + body.toString() + " with payload " + payload);
         }
         if (statusCode >= 500) {
             return fail(TEST_TYPE.DATA_VALIDATION,"Server error: " + statusCode);
