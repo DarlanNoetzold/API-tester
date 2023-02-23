@@ -6,10 +6,7 @@ import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -29,12 +26,13 @@ public class TestGetRequisitionController {
     @Autowired
     ResultService resultService;
 
-    @GetMapping("/test")
+    @PostMapping("/test")
     public ResponseEntity<TestGetRequisition> testGetEndpoint(
-            @RequestParam("url") String url,
-            @RequestParam(value = "headers", required = false) Map<String, String> headers,
-            @RequestParam(value = "params", required = false) Map<String, String> params
-    ) {
+            @RequestBody Map<String, Object> requestBody) {
+        String url = (String) requestBody.get("url");
+        Map<String, String> headers = (Map<String, String>) requestBody.get("headers");
+        Map<String, String> params = (Map<String, String>) requestBody.get("params");
+
         RequestSpecification request = RestAssured.given()
                 .urlEncodingEnabled(false);
 
