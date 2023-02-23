@@ -43,4 +43,38 @@ public class SqlInjectionTest extends BaseTest {
 
         return success(TEST_TYPE.SQL_INJECTION);
     }
+
+    public Result testPostSqlInjection(String url, RequestSpecification request, Map<String,String> params, String body) {
+        if (params == null) return null;
+        String payload = "' or 1=1 --";
+        try {
+            payload = URLEncoder.encode(payload, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
+        for (Map.Entry<String, String> pair : params.entrySet()) {
+            uriBuilder.queryParam(pair.getKey(), payload);
+        }
+
+        Response response = request.body(body)
+                .post(uriBuilder.toUriString())
+                .then()
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        int statusCode = response.getStatusCode();
+        if (responseBody.contains(payload)) {
+            return fail(TEST_TYPE.SQL_INJECTION, "SQL injection vulnerability found in parameter " + params.toString() + " with payload " + payload);
+        }
+        if (statusCode >= 500) {
+            return fail(TEST_TYPE.SQL_INJECTION, "Server error: " + statusCode);
+        }
+
+        return success(TEST_TYPE.SQL_INJECTION);
+    }
+
+
 }
