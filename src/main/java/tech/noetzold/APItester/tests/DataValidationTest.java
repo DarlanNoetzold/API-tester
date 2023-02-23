@@ -35,10 +35,10 @@ public class DataValidationTest extends BaseTest {
         return success(TEST_TYPE.DATA_VALIDATION);
     }
 
-    public Result testPostDataValidation(RequestSpecification request, String url, Map<String,String> body, HttpHeaders headers) {
+    public Result testPostDataValidation(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
         if(body == null) return null;
         String payload = "foo";
-        for (Map.Entry<String,String> pair : body.entrySet())
+        for (Map.Entry<String,Object> pair : body.entrySet())
             pair.setValue(payload);
 
         Response response = request
