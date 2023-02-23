@@ -33,4 +33,30 @@ public class DataValidationTest extends BaseTest {
         }
         return success(TEST_TYPE.DATA_VALIDATION);
     }
+
+    public Result testPostDataValidation(String url, RequestSpecification request, Map<String,String> params, String body) {
+        if(params == null) return null;
+        String payload = "foo";
+        for (Map.Entry<String,String> pair : params.entrySet())
+            pair.setValue(payload);
+
+        Response response = request
+                .params(params)
+                .when()
+                .body(body)
+                .post(url)
+                .then()
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        int statusCode = response.getStatusCode();
+        if (!responseBody.contains(payload)) {
+            return fail(TEST_TYPE.DATA_VALIDATION, "Data validation failed in parameter " + params.toString() + " with payload " + payload);
+        }
+        if (statusCode >= 500) {
+            return fail(TEST_TYPE.DATA_VALIDATION,"Server error: " + statusCode);
+        }
+        return success(TEST_TYPE.DATA_VALIDATION);
+    }
 }
