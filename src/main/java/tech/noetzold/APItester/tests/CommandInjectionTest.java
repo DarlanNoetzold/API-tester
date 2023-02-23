@@ -34,14 +34,28 @@ public class CommandInjectionTest extends BaseTest{
         return success(TEST_TYPE.COMMAND_INJECTION);
     }
 
-    public void testPostCommandInjection(RequestSpecification request, String url) {
-        Response response = request.param("name", "&& echo 'Hello World' &&").post(url);
-        int statusCode = response.getStatusCode();
+    public Result testPostCommandInjection(RequestSpecification request, String url, Map<String,Object> body) {
+        if(body == null) return null;
+        String payload = "||ls";
+        for (Map.Entry<String,Object> pair : body.entrySet())
+            pair.setValue(payload);
+        Response response = request
+                .when()
+                .body(body)
+                .post(url)
+                .then()
+                .extract()
+                .response();
 
-        if (statusCode == 200) {
-            System.out.println("Test failed! Command Injection may be possible.");
-        } else {
-            System.out.println("Test passed! Command Injection is not possible.");
+        String responseBody = response.getBody().asString();
+        int statusCode = response.getStatusCode();
+        if (responseBody.contains(payload)) {
+            return fail(TEST_TYPE.COMMAND_INJECTION, "Command injection vulnerability found in parameter " + body.toString() + " with payload " + payload);
         }
+        if (statusCode >= 500) {
+            return fail(TEST_TYPE.COMMAND_INJECTION, "Server error: " + statusCode);
+        }
+
+        return success(TEST_TYPE.COMMAND_INJECTION);
     }
 }
