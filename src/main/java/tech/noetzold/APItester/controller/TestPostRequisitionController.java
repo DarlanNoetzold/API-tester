@@ -29,15 +29,13 @@ public class TestPostRequisitionController {
 
     @PostMapping("/test")
     public ResponseEntity<TestPostRequisition> testPostRequest(@RequestBody TestPostRequisition testPostRequisition, @RequestHeader HttpHeaders headers) {
-
-
         ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {};
         try {
             Map<String, Object> map = objectMapper.readValue(testPostRequisition.getBody(), typeRef);
-            RequestSpecification request = RestAssured.given().headers(headers).body(testPostRequisition.getBody());
+            RequestSpecification request = RestAssured.given();
             CommandInjectionTest commandInjectionTest = new CommandInjectionTest();
-            commandInjectionTest.testPostCommandInjection(request, testPostRequisition.getUrl(), map);
+            commandInjectionTest.testPostCommandInjection(request, testPostRequisition.getUrl(), map, headers);
         } catch (JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(testPostRequisition);
         }
