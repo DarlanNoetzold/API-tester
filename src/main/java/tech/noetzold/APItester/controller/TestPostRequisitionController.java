@@ -17,6 +17,7 @@ import tech.noetzold.APItester.service.TestPostRequisitionService;
 import tech.noetzold.APItester.tests.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -35,15 +36,19 @@ public class TestPostRequisitionController {
         ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {};
         try {
-            Map<String, Object> map = objectMapper.readValue(testPostRequisition.getBody(), typeRef);
+            Map<String, Object> body = objectMapper.readValue(testPostRequisition.getBody(), typeRef);
             RequestSpecification request = RestAssured.given();
-            CommandInjectionTest commandInjectionTest = new CommandInjectionTest();
-            commandInjectionTest.testPostCommandInjection(request, testPostRequisition.getUrl(), map, headers);
+
+            List<Result> testsResults = callTestsAndReturnResults(request, testPostRequisition.getUrl(), body, headers);
+
+            TestPostRequisition req = testPostRequisitionService.saveService(new TestPostRequisition(body, Calendar.getInstance(), testsResults));
+
+            return ResponseEntity.status(HttpStatus.OK).body(req);
+
         } catch (JsonProcessingException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(testPostRequisition);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(testPostRequisition);
     }
 
     private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, Object> body, HttpHeaders headers){
