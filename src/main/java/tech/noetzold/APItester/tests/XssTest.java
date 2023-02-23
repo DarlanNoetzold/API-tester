@@ -2,6 +2,7 @@ package tech.noetzold.APItester.tests;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.springframework.http.HttpHeaders;
 import tech.noetzold.APItester.model.Result;
 import tech.noetzold.APItester.util.TEST_TYPE;
 
@@ -34,14 +35,14 @@ public class XssTest extends BaseTest {
         return success(TEST_TYPE.XSS_INJECTION);
     }
 
-    public Result testPostXss(String url, RequestSpecification request, Map<String,String> params, String body) {
-        if(params == null) return null;
+    public Result testPostXss(RequestSpecification request, String url, Map<String,String> body, HttpHeaders headers) {
+        if(body == null) return null;
         String payload = "<script>alert(1)</script>";
-        for (Map.Entry<String,String> pair : params.entrySet())
+        for (Map.Entry<String,String> pair : body.entrySet())
             pair.setValue(payload);
         Response response = request
-                .params(params)
                 .when()
+                .headers(headers)
                 .body(body)
                 .post(url)
                 .then()
@@ -51,7 +52,7 @@ public class XssTest extends BaseTest {
         String responseBody = response.getBody().asString();
         int statusCode = response.getStatusCode();
         if (responseBody.contains(payload)) {
-            return fail(TEST_TYPE.XSS_INJECTION,"XSS vulnerability found in parameter " + params.toString() + " with payload " + payload);
+            return fail(TEST_TYPE.XSS_INJECTION,"XSS vulnerability found in parameter " + body.toString() + " with payload " + payload);
         }
         if (statusCode >= 500) {
             return fail(TEST_TYPE.XSS_INJECTION,"Server error: " + statusCode);
