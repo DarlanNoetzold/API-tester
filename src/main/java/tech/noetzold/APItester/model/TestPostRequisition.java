@@ -17,7 +17,6 @@ public class TestPostRequisition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String body;
 
     private String url;
@@ -29,7 +28,7 @@ public class TestPostRequisition {
     @OneToMany(cascade=CascadeType.PERSIST)
     private List<Result> result;
 
-    public TestPostRequisition(Map<String, String> body, Calendar date_request, List<Result> result) {
+    public TestPostRequisition(Map<String, Object> body, Calendar date_request, List<Result> result) {
         this.body = body.toString();
         this.date_request = date_request;
         this.result = result;
