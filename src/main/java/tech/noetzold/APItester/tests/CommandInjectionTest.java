@@ -2,6 +2,7 @@ package tech.noetzold.APItester.tests;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.springframework.http.HttpHeaders;
 import tech.noetzold.APItester.model.Result;
 import tech.noetzold.APItester.util.TEST_TYPE;
 
@@ -34,7 +35,7 @@ public class CommandInjectionTest extends BaseTest{
         return success(TEST_TYPE.COMMAND_INJECTION);
     }
 
-    public Result testPostCommandInjection(RequestSpecification request, String url, Map<String,Object> body) {
+    public Result testPostCommandInjection(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
         if(body == null) return null;
         String payload = "||ls";
         for (Map.Entry<String,Object> pair : body.entrySet())
@@ -42,6 +43,7 @@ public class CommandInjectionTest extends BaseTest{
         Response response = request
                 .when()
                 .body(body)
+                .headers(headers)
                 .post(url)
                 .then()
                 .extract()
