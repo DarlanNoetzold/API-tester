@@ -9,8 +9,6 @@ import tech.noetzold.APItester.util.TEST_TYPE;
 import java.util.Arrays;
 import java.util.Base64;
 
-import static org.hamcrest.Matchers.equalTo;
-
 import java.util.List;
 import java.util.Map;
 
@@ -22,19 +20,25 @@ public class SecurityTest extends BaseTest{
 
         for(String weakPassword: weakPasswords) {
             String token = Base64.getEncoder().encodeToString((username + ":" + weakPassword).getBytes());
-            Response response = request.header("Authorization", "Basic " + token)
+            Response responseBasic = request.header("Authorization", "Basic " + token)
                     .when()
                     .get(url);
 
-            String responseBody = response.getBody().asString();
-            int statusCode = response.getStatusCode();
-            if (statusCode <= 300) {
-                return fail(TEST_TYPE.SECURITY, "Security failed in token by weak password");
-            }else if (statusCode >= 500) {
-                return fail(TEST_TYPE.SECURITY,"Server error: " + statusCode);
+            Result resultBasicTests = testStatusCode(responseBasic.getStatusCode());
+
+            if(!("Success".equals(resultBasicTests.getDetails()))){
+                return resultBasicTests;
             }
+
+            Response responseBearer = request.header("Authorization", "Bearer " + token)
+                    .when()
+                    .get(url);
+
+            return testStatusCode(responseBearer.getStatusCode());
+
         }
-        return success(TEST_TYPE.SECURITY);
+
+        return null;
     }
 
     public Result testPostSecureResponse(RequestSpecification request, String url, Map<String, Object> body, HttpHeaders headers) {
@@ -43,17 +47,32 @@ public class SecurityTest extends BaseTest{
 
         for(String weakPassword: weakPasswords) {
             String token = Base64.getEncoder().encodeToString((username + ":" + weakPassword).getBytes());
-            Response response = request.header("Authorization", "Basic " + token)
+            Response responseBasic = request.header("Authorization", "Basic " + token)
                     .when()
                     .post(url);
 
-            String responseBody = response.getBody().asString();
-            int statusCode = response.getStatusCode();
-            if (statusCode <= 300) {
-                return fail(TEST_TYPE.SECURITY, "Security failed in token by weak password");
-            } else if (statusCode >= 500) {
-                return fail(TEST_TYPE.SECURITY, "Server error: " + statusCode);
+            Result resultBasicTests = testStatusCode(responseBasic.getStatusCode());
+
+            if(!("Success".equals(resultBasicTests.getDetails()))){
+                return resultBasicTests;
             }
+
+            Response responseBearer = request.header("Authorization", "Bearer " + token)
+                    .when()
+                    .post(url);
+
+            return testStatusCode(responseBearer.getStatusCode());
+
+        }
+
+        return null;
+    }
+
+    private Result testStatusCode(int statusCode){
+        if (statusCode <= 300) {
+            return fail(TEST_TYPE.SECURITY, "Security failed in token by weak password");
+        } else if (statusCode >= 500) {
+            return fail(TEST_TYPE.SECURITY, "Server error: " + statusCode);
         }
         return success(TEST_TYPE.SECURITY);
     }
