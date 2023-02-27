@@ -38,6 +38,8 @@ public class XssTest extends BaseTest {
     public Result testPostXss(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
         if(body == null) return null;
         String payload = "<script>alert(1)</script>";
+        //TODO: modificar para testar modificando cada atributo, individualmente
+
         for (Map.Entry<String,Object> pair : body.entrySet())
             pair.setValue(payload);
         Response response = request

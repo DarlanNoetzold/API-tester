@@ -38,6 +38,7 @@ public class CommandInjectionTest extends BaseTest{
     public Result testPostCommandInjection(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
         if(body == null) return null;
         String payload = "||ls";
+        //TODO: modificar para testar modificando cada atributo, individualmente
         for (Map.Entry<String,Object> pair : body.entrySet())
             pair.setValue(payload);
         Response response = request

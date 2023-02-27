@@ -55,6 +55,8 @@ public class SqlInjectionTest extends BaseTest {
         }
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
+        //TODO: modificar para testar modificando cada atributo, individualmente
+
         for (Map.Entry<String, Object> pair : body.entrySet()) {
             uriBuilder.queryParam(pair.getKey(), payload);
         }

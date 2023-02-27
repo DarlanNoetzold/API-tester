@@ -38,6 +38,8 @@ public class DataValidationTest extends BaseTest {
     public Result testPostDataValidation(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
         if(body == null) return null;
         String payload = "foo";
+        //TODO: modificar para testar modificando cada atributo, individualmente
+
         for (Map.Entry<String,Object> pair : body.entrySet())
             pair.setValue(payload);
 
