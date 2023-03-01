@@ -39,7 +39,7 @@ public class XssTest extends BaseTest {
     public Result testPostXss(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
         if(body == null) return null;
         String payload = "<script>alert(1)</script>";
-        
+
         for (String key : body.keySet()) {
             Map<String,Object> modifiedBody = new HashMap<>(body);
             modifiedBody.put(key, payload);
