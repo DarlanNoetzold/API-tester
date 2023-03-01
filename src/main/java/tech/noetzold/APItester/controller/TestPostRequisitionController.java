@@ -6,16 +6,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.noetzold.APItester.model.Result;
+import tech.noetzold.APItester.model.TestGetRequisition;
 import tech.noetzold.APItester.model.TestPostRequisition;
 import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.service.TestPostRequisitionService;
 import tech.noetzold.APItester.tests.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -30,6 +35,16 @@ public class TestPostRequisitionController {
 
     @Autowired
     ResultService resultService;
+
+    @GetMapping("/getPageable")
+    public ResponseEntity<Page<TestPostRequisition>> getAll(HttpServletRequest request, HttpServletResponse response, Pageable pageable) {
+        return new ResponseEntity<>(testPostRequisitionService.findAll(pageable), HttpStatus.OK);
+    }
+
+    @DeleteMapping("remove/{id}")
+    public void remove(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") Integer id) {
+        testPostRequisitionService.deleteGetRequisitionById(id);
+    }
 
     @PostMapping("/test")
     public ResponseEntity<TestPostRequisition> testPostRequest(@RequestBody TestPostRequisition testPostRequisition, @RequestHeader HttpHeaders headers) {
