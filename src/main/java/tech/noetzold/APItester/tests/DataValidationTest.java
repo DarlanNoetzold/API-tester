@@ -38,27 +38,27 @@ public class DataValidationTest extends BaseTest {
     public Result testPostDataValidation(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
         if(body == null) return null;
         String payload = "foo";
-        //TODO: modificar para testar modificando cada atributo, individualmente
 
-        for (Map.Entry<String,Object> pair : body.entrySet())
+        for (Map.Entry<String,Object> pair : body.entrySet()) {
             pair.setValue(payload);
 
-        Response response = request
-                .when()
-                .body(body)
-                .headers(headers)
-                .post(url)
-                .then()
-                .extract()
-                .response();
+            Response response = request
+                    .when()
+                    .body(body)
+                    .headers(headers)
+                    .post(url)
+                    .then()
+                    .extract()
+                    .response();
 
-        String responseBody = response.getBody().asString();
-        int statusCode = response.getStatusCode();
-        if (!responseBody.contains(payload)) {
-            return fail(TEST_TYPE.DATA_VALIDATION, "Data validation failed in parameter " + body.toString() + " with payload " + payload);
-        }
-        if (statusCode >= 500) {
-            return fail(TEST_TYPE.DATA_VALIDATION,"Server error: " + statusCode);
+            String responseBody = response.getBody().asString();
+            int statusCode = response.getStatusCode();
+            if (!responseBody.contains(payload)) {
+                return fail(TEST_TYPE.DATA_VALIDATION, "Data validation failed in parameter " + body.toString() + " with payload " + payload);
+            }
+            if (statusCode >= 500) {
+                return fail(TEST_TYPE.DATA_VALIDATION, "Server error: " + statusCode);
+            }
         }
         return success(TEST_TYPE.DATA_VALIDATION);
     }
