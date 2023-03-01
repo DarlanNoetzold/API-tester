@@ -55,26 +55,24 @@ public class SqlInjectionTest extends BaseTest {
         }
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
-        //TODO: modificar para testar modificando cada atributo, individualmente
 
         for (Map.Entry<String, Object> pair : body.entrySet()) {
             uriBuilder.queryParam(pair.getKey(), payload);
-        }
+            Response response = request.body(body)
+                    .headers(headers)
+                    .post(uriBuilder.toUriString())
+                    .then()
+                    .extract()
+                    .response();
 
-        Response response = request.body(body)
-                .headers(headers)
-                .post(uriBuilder.toUriString())
-                .then()
-                .extract()
-                .response();
-
-        String responseBody = response.getBody().asString();
-        int statusCode = response.getStatusCode();
-        if (responseBody.contains(payload)) {
-            return fail(TEST_TYPE.SQL_INJECTION, "SQL injection vulnerability found in parameter " + body.toString() + " with payload " + payload);
-        }
-        if (statusCode >= 500) {
-            return fail(TEST_TYPE.SQL_INJECTION, "Server error: " + statusCode);
+            String responseBody = response.getBody().asString();
+            int statusCode = response.getStatusCode();
+            if (responseBody.contains(payload)) {
+                return fail(TEST_TYPE.SQL_INJECTION, "SQL injection vulnerability found in parameter " + body.toString() + " with payload " + payload);
+            }
+            if (statusCode >= 500) {
+                return fail(TEST_TYPE.SQL_INJECTION, "Server error: " + statusCode);
+            }
         }
 
         return success(TEST_TYPE.SQL_INJECTION);
