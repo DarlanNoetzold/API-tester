@@ -36,27 +36,28 @@ public class CommandInjectionTest extends BaseTest{
     }
 
     public Result testPostCommandInjection(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
-        if(body == null) return null;
+        if (body == null) return null;
         String payload = "||ls";
-        //TODO: modificar para testar modificando cada atributo, individualmente
-        for (Map.Entry<String,Object> pair : body.entrySet())
-            pair.setValue(payload);
-        Response response = request
-                .when()
-                .body(body)
-                .headers(headers)
-                .post(url)
-                .then()
-                .extract()
-                .response();
 
-        String responseBody = response.getBody().asString();
-        int statusCode = response.getStatusCode();
-        if (responseBody.contains(payload)) {
-            return fail(TEST_TYPE.COMMAND_INJECTION, "Command injection vulnerability found in parameter " + body.toString() + " with payload " + payload);
-        }
-        if (statusCode >= 500) {
-            return fail(TEST_TYPE.COMMAND_INJECTION, "Server error: " + statusCode);
+        for (Map.Entry<String, Object> pair : body.entrySet()){
+            pair.setValue(payload);
+            Response response = request
+                    .when()
+                    .body(body)
+                    .headers(headers)
+                    .post(url)
+                    .then()
+                    .extract()
+                    .response();
+
+            String responseBody = response.getBody().asString();
+            int statusCode = response.getStatusCode();
+            if (responseBody.contains(payload)) {
+                return fail(TEST_TYPE.COMMAND_INJECTION, "Command injection vulnerability found in parameter " + body.toString() + " with payload " + payload);
+            }
+            if (statusCode >= 500) {
+                return fail(TEST_TYPE.COMMAND_INJECTION, "Server error: " + statusCode);
+            }
         }
 
         return success(TEST_TYPE.COMMAND_INJECTION);
