@@ -4,6 +4,8 @@ package tech.noetzold.APItester.controller;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ import tech.noetzold.APItester.service.TestGetRequisitionService;
 import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.tests.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/get")
 public class TestGetRequisitionController {
@@ -25,6 +30,16 @@ public class TestGetRequisitionController {
 
     @Autowired
     ResultService resultService;
+
+    @GetMapping("/getPageable")
+    public ResponseEntity<Page<TestGetRequisition>> getAll(HttpServletRequest request, HttpServletResponse response, Pageable pageable) {
+        return new ResponseEntity<>(testGetRequisitionService.findAll(pageable), HttpStatus.OK);
+    }
+
+    @DeleteMapping("remove/{id}")
+    public void remove(HttpServletRequest request, HttpServletResponse response, @PathVariable("id") Integer id) {
+        testGetRequisitionService.deleteGetRequisitionById(id);
+    }
 
     @PostMapping("/test")
     public ResponseEntity<TestGetRequisition> testGetEndpoint(
