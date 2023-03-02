@@ -11,12 +11,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import tech.noetzold.APItester.model.Result;
 import tech.noetzold.APItester.model.TestGetRequisition;
 import tech.noetzold.APItester.model.TestPostRequisition;
+import tech.noetzold.APItester.model.User;
 import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.service.TestPostRequisitionService;
+import tech.noetzold.APItester.service.UserService;
 import tech.noetzold.APItester.tests.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +38,9 @@ public class TestPostRequisitionController {
 
     @Autowired
     ResultService resultService;
+
+    @Autowired
+    UserService userService;
 
     @GetMapping("/getPageable")
     public ResponseEntity<Page<TestPostRequisition>> getAll(HttpServletRequest request, HttpServletResponse response, Pageable pageable) {
@@ -56,7 +62,9 @@ public class TestPostRequisitionController {
 
             List<Result> testsResults = callTestsAndReturnResults(request, testPostRequisition.getUrl(), body, headers);
 
-            TestPostRequisition req = testPostRequisitionService.saveService(new TestPostRequisition(body, Calendar.getInstance(), testsResults));
+            User user = userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+
+            TestPostRequisition req = testPostRequisitionService.saveService(new TestPostRequisition(body, Calendar.getInstance(), testsResults, user));
 
             return ResponseEntity.status(HttpStatus.OK).body(req);
 
