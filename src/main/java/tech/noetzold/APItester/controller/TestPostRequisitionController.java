@@ -42,9 +42,9 @@ public class TestPostRequisitionController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/getPageable")
-    public ResponseEntity<Page<TestPostRequisition>> getAll(HttpServletRequest request, HttpServletResponse response, Pageable pageable) {
-        return new ResponseEntity<>(testPostRequisitionService.findAll(pageable), HttpStatus.OK);
+    @GetMapping("/getByUser/{login}")
+    public ResponseEntity<Page<TestPostRequisition>> getAllByUser(HttpServletRequest request, HttpServletResponse response, Pageable pageable, @PathVariable("login") String login) {
+        return new ResponseEntity<>(testPostRequisitionService.findByUser(pageable, login), HttpStatus.OK);
     }
 
     @DeleteMapping("remove/{id}")
