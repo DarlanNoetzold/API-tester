@@ -27,12 +27,16 @@ public class TestGetRequisition implements Serializable {
     @Column(name = "date_request", nullable = false)
     private Calendar date_request;
 
+    @ManyToOne
+    private User user;
+
     @OneToMany(cascade=CascadeType.PERSIST)
     private List<Result> result;
 
-    public TestGetRequisition(Map<String, String> parameters, Calendar date_request, List<Result> result) {
+    public TestGetRequisition(Map<String, String> parameters, Calendar date_request, List<Result> result, User user) {
         this.parameters = parameters.toString();
         this.date_request = date_request;
         this.result = result;
+        this.user = user;
     }
 }
