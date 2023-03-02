@@ -21,6 +21,10 @@ public class TestPostRequisitionService {
         return testPostRequisitionRepository.findAll(pageable);
     }
 
+    public Page<TestPostRequisition> findByUser(Pageable pageable, String login){
+        return testPostRequisitionRepository.findByUser(pageable, login);
+    }
+
     public void deleteGetRequisitionById(Integer id) {
         testPostRequisitionRepository.deleteById(id);
     }
