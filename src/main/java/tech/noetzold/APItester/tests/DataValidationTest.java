@@ -2,7 +2,6 @@ package tech.noetzold.APItester.tests;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-import org.springframework.http.HttpHeaders;
 import tech.noetzold.APItester.model.Result;
 import tech.noetzold.APItester.util.TEST_TYPE;
 
@@ -35,7 +34,7 @@ public class DataValidationTest extends BaseTest {
         return success(TEST_TYPE.DATA_VALIDATION);
     }
 
-    public Result testPostDataValidation(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
+    public Result testPostDataValidation(RequestSpecification request, String url, Map<String,Object> body, Map<String, String> headers) {
         if(body == null) return null;
         String payload = "foo";
 
