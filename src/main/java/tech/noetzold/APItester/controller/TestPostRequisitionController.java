@@ -21,6 +21,7 @@ import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.service.TestPostRequisitionService;
 import tech.noetzold.APItester.service.UserService;
 import tech.noetzold.APItester.tests.*;
+import tech.noetzold.APItester.util.QueryStringParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,11 +54,13 @@ public class TestPostRequisitionController {
     }
 
     @PostMapping("/test")
-    public ResponseEntity<TestPostRequisition> testPostRequest(@RequestBody TestPostRequisition testPostRequisition, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<TestPostRequisition> testPostRequest(@RequestBody TestPostRequisition testPostRequisition) {
         ObjectMapper objectMapper = new ObjectMapper();
         TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {};
         try {
             Map<String, Object> body = objectMapper.readValue(testPostRequisition.getBody(), typeRef);
+            Map<String, String> headers = QueryStringParser.parseQueryString(testPostRequisition.getHeaders());
+
             RequestSpecification request = RestAssured.given();
 
             List<Result> testsResults = callTestsAndReturnResults(request, testPostRequisition.getUrl(), body, headers);
@@ -74,7 +77,7 @@ public class TestPostRequisitionController {
 
     }
 
-    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, Object> body, HttpHeaders headers){
+    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers){
         List<Result> testsResults = new ArrayList<>();
 
         SecurityTest securityTest = new SecurityTest();
