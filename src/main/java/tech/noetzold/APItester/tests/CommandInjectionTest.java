@@ -35,7 +35,7 @@ public class CommandInjectionTest extends BaseTest{
         return success(TEST_TYPE.COMMAND_INJECTION);
     }
 
-    public Result testPostCommandInjection(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
+    public Result testPostCommandInjection(RequestSpecification request, String url, Map<String,Object> body, Map<String, String> headers) {
         if (body == null) return null;
         String payload = "||ls";
 
