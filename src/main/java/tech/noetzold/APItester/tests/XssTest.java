@@ -36,7 +36,7 @@ public class XssTest extends BaseTest {
         return success(TEST_TYPE.XSS_INJECTION);
     }
 
-    public Result testPostXss(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
+    public Result testPostXss(RequestSpecification request, String url, Map<String,Object> body, Map<String, String> headers) {
         if(body == null) return null;
         String payload = "<script>alert(1)</script>";
 

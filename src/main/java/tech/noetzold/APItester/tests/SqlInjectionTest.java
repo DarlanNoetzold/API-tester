@@ -45,7 +45,7 @@ public class SqlInjectionTest extends BaseTest {
         return success(TEST_TYPE.SQL_INJECTION);
     }
 
-    public Result testPostSqlInjection(RequestSpecification request, String url, Map<String,Object> body, HttpHeaders headers) {
+    public Result testPostSqlInjection(RequestSpecification request, String url, Map<String,Object> body, Map<String, String> headers) {
         if (body == null) return null;
         String payload = "' or 1=1 --";
         try {
