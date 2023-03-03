@@ -23,6 +23,10 @@ public class TestGetRequisition implements Serializable {
 
     private String parameters;
 
+    private String headers;
+
+    private String url;
+
     @Temporal(TemporalType.DATE)
     @Column(name = "date_request", nullable = false)
     private Calendar date_request;
@@ -32,6 +36,10 @@ public class TestGetRequisition implements Serializable {
 
     @OneToMany(cascade=CascadeType.PERSIST)
     private List<Result> result;
+
+    private boolean isOnline;
+
+    private String gptKey;
 
     public TestGetRequisition(Map<String, String> parameters, Calendar date_request, List<Result> result, User user) {
         this.parameters = parameters.toString();
