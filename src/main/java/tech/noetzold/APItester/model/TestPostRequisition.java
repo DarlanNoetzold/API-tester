@@ -21,6 +21,8 @@ public class TestPostRequisition {
 
     private String url;
 
+    private String headers;
+
     @Temporal(TemporalType.DATE)
     @Column(name = "date_request", nullable = false)
     private Calendar date_request;
@@ -29,6 +31,10 @@ public class TestPostRequisition {
     private User user;
     @OneToMany(cascade=CascadeType.PERSIST)
     private List<Result> result;
+
+    private boolean isOnline;
+
+    private String gptKey;
 
     public TestPostRequisition(Map<String, Object> body, Calendar date_request, List<Result> result, User user) {
         this.body = body.toString();
