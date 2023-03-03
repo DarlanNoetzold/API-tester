@@ -6,6 +6,7 @@ import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,7 @@ import tech.noetzold.APItester.service.TestGetRequisitionService;
 import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.service.UserService;
 import tech.noetzold.APItester.tests.*;
+import tech.noetzold.APItester.util.QueryStringParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,29 +51,29 @@ public class TestGetRequisitionController {
 
     @PostMapping("/test")
     public ResponseEntity<TestGetRequisition> testGetEndpoint(
-            @RequestBody Map<String, Object> requestBody) {
-        String url = (String) requestBody.get("url");
-        Map<String, String> headers = (Map<String, String>) requestBody.get("headers");
-        Map<String, String> params = (Map<String, String>) requestBody.get("params");
+            @RequestBody TestGetRequisition testGetRequisition) {
+        String url = testGetRequisition.getUrl();
+        Map<String, String> parameters = QueryStringParser.parseQueryString(testGetRequisition.getParameters());
+        Map<String, String> headers = QueryStringParser.parseQueryString(testGetRequisition.getHeaders());
 
         RequestSpecification request = RestAssured.given()
                 .urlEncodingEnabled(false);
 
-        if (headers != null && !headers.isEmpty()) {
+        if (!headers.isEmpty()) {
             request.headers(headers);
         }
 
-        if (params != null && !params.isEmpty()) {
-            request.params(params);
+        if (!parameters.isEmpty()) {
+            request.params(parameters);
         }
 
-        List<Result> testsResults = callTestsAndReturnResults(request,url,params);
+        testGetRequisition.setResult(callTestsAndReturnResults(request,url,parameters));
 
-        User user = userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        testGetRequisition.setUser(userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()));
 
-        TestGetRequisition req = testGetRequisitionService.saveService(new TestGetRequisition(params, Calendar.getInstance(), testsResults, user));
+        testGetRequisitionService.saveService(testGetRequisition);
 
-        return ResponseEntity.status(HttpStatus.OK).body(req);
+        return ResponseEntity.status(HttpStatus.OK).body(testGetRequisition);
     }
 
     private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, String> params){
