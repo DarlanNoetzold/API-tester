@@ -2,6 +2,7 @@ package tech.noetzold.APItester.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import tech.noetzold.APItester.model.User;
@@ -31,6 +32,11 @@ public class UserController {
     public ResponseEntity<User> salvar(@RequestBody User user) {
         user.setPassword(encoder.encode(user.getPassword()));
         return ResponseEntity.ok(userService.saveUsuario(user));
+    }
+    @GetMapping("/getLogedUser")
+    public ResponseEntity<User> getLogedUser() {
+        User user = userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/validatePass")
