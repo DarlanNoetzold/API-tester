@@ -46,7 +46,7 @@ public class SecurityTest extends BaseTest{
         return new Result(TEST_TYPE.SECURITY, "Success");
     }
 
-    public Result testPostSecureResponse(RequestSpecification request, String url, Map<String, Object> body, HttpHeaders headers) {
+    public Result testPostSecureResponse(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
 
         for(String weakPassword: this.weakPasswords) {
             String token = Base64.getEncoder().encodeToString((this.username + ":" + weakPassword).getBytes());
