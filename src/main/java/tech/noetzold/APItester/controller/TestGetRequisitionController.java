@@ -67,7 +67,7 @@ public class TestGetRequisitionController {
             request.params(parameters);
         }
 
-        testGetRequisition.setResult(callTestsAndReturnResults(request,url,parameters));
+        testGetRequisition.setResult(callTestsAndReturnResults(request,url,parameters, testGetRequisition));
 
         testGetRequisition.setUser(userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()));
 
@@ -76,7 +76,7 @@ public class TestGetRequisitionController {
         return ResponseEntity.status(HttpStatus.OK).body(testGetRequisition);
     }
 
-    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, String> params){
+    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, String> params, TestGetRequisition testGetRequisition){
         List<Result> testsResults = new ArrayList<>();
 
         SecurityTest securityTest = new SecurityTest();
@@ -93,6 +93,9 @@ public class TestGetRequisitionController {
 
         DataValidationTest dataValidationTest = new DataValidationTest();
         testsResults.add(resultService.saveService(dataValidationTest.testGetDataValidation(url, request, params)));
+
+        SendToGPT3 sendToGPT3Test = new SendToGPT3(testGetRequisition);
+        testsResults.add(resultService.saveService(sendToGPT3Test.doGptGetTest()));
 
         return testsResults;
 
