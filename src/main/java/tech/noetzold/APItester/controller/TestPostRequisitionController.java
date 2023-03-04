@@ -63,7 +63,7 @@ public class TestPostRequisitionController {
 
             RequestSpecification request = RestAssured.given();
 
-            List<Result> testsResults = callTestsAndReturnResults(request, testPostRequisition.getUrl(), body, headers);
+            List<Result> testsResults = callTestsAndReturnResults(request, testPostRequisition.getUrl(), body, headers, testPostRequisition);
 
             User user = userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
 
@@ -77,7 +77,7 @@ public class TestPostRequisitionController {
 
     }
 
-    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers){
+    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers, TestPostRequisition testPostRequisition){
         List<Result> testsResults = new ArrayList<>();
 
         SecurityTest securityTest = new SecurityTest();
@@ -94,6 +94,9 @@ public class TestPostRequisitionController {
 
         DataValidationTest dataValidationTest = new DataValidationTest();
         testsResults.add(resultService.saveService(dataValidationTest.testPostDataValidation(request, url, body, headers)));
+
+        SendToGPT3 sendToGPT3Test = new SendToGPT3(testPostRequisition);
+        testsResults.add(resultService.saveService(sendToGPT3Test.doGptPostTest()));
 
         return testsResults;
 
