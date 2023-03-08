@@ -2,69 +2,58 @@ package tech.noetzold.APItester.tests;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import tech.noetzold.APItester.model.PerformanceResult;
+import tech.noetzold.APItester.model.Result;
+import tech.noetzold.APItester.model.TestPostRequisition;
+import tech.noetzold.APItester.util.TEST_TYPE;
 
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 public class PerformanceTest {
-    private final String apiEndpoint;
+    private final TestPostRequisition testPostRequisition;
 
-    public PerformanceTest(String apiEndpoint) {
-        this.apiEndpoint = apiEndpoint;
+    public PerformanceTest(TestPostRequisition testPostRequisition) {
+        this.testPostRequisition = testPostRequisition;
     }
 
-    public List<PerformanceResult> runTests(int numTests, int numRequestsPerTest, String imageBase64) {
-        List<PerformanceResult> results = new ArrayList<>();
+    public List<Result> runTests(int numTests, int numRequestsPerTest, RequestSpecification request, Map<String,Object> body, Map<String, String> headers) {
+        List<Result> results = new ArrayList<>();
 
         for (int i = 0; i < numTests; i++) {
-            // Faz um teste de performance
-            PerformanceResult result = runTest(numRequestsPerTest, imageBase64);
+            Result result = runTest(numRequestsPerTest, request, body, headers);
             results.add(result);
         }
 
         return results;
     }
 
-    private PerformanceResult runTest(int numRequests, String imageBase64) {
-        // Configura o endpoint da API a ser testada
-        RestAssured.baseURI = apiEndpoint;
+    private Result runTest(int numRequests, RequestSpecification request, Map<String,Object> body, Map<String, String> headers) {
 
-        // Converte a imagem em base64 para um array de bytes
-        byte[] imageData = Base64.getDecoder().decode(imageBase64);
-
-        // Faz uma requisição HTTP POST para a API com o corpo da imagem
-        Response response = RestAssured.given()
-                .contentType(ContentType.BINARY)
-                .body(imageData)
+        Response response = request
+                .headers(headers)
+                .body(body)
                 .when()
-                .post("/images");
+                .post(testPostRequisition.getUrl());
 
-        // Verifica se a resposta foi bem-sucedida
         if (response.getStatusCode() != 200) {
             throw new RuntimeException("API returned status code " + response.getStatusCode());
         }
 
-        // Calcula o tempo de resposta
         long responseTime = response.getTime();
 
-        // Calcula a memória de requisição máxima
         int maxResponseSize = response.getBody().asByteArray().length;
 
-        // Calcula o número de requisições por segundo
         long start = System.currentTimeMillis();
         for (int i = 0; i < numRequests; i++) {
-            RestAssured.given()
-                    .contentType(ContentType.BINARY)
-                    .body(imageData)
-                    .when()
-                    .post("/images");
+            request.headers(headers).body(body).when().post(testPostRequisition.getUrl());
         }
         long end = System.currentTimeMillis();
         double requestsPerSecond = numRequests / ((end - start) / 1000.0);
 
-        // Retorna o resultado do teste de performance
-        return new PerformanceResult(responseTime, maxResponseSize, requestsPerSecond);
+        return new Result(TEST_TYPE.PERFORMANCE, new PerformanceResult(responseTime, maxResponseSize, requestsPerSecond).toString());
     }
 }
