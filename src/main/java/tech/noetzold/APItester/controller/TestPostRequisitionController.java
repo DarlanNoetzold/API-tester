@@ -96,6 +96,10 @@ public class TestPostRequisitionController {
         SendToGPT3 sendToGPT3Test = new SendToGPT3(testPostRequisition);
         testsResults.add(resultService.saveService(sendToGPT3Test.doGptPostTest()));
 
+        PerformanceTest performanceTest = new PerformanceTest(testPostRequisition);
+        List<Result> performanceTestResults = performanceTest.runTests(100, 100, request, body, headers);
+        for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
+
         return testsResults;
 
     }
