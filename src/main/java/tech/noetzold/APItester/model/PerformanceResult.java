@@ -21,4 +21,13 @@ public class PerformanceResult {
     public double getRequestsPerSecond() {
         return requestsPerSecond;
     }
+
+    @Override
+    public String toString() {
+        return "PerformanceResult{" +
+                "responseTime=" + responseTime +
+                ", maxResponseSize=" + maxResponseSize +
+                ", requestsPerSecond=" + requestsPerSecond +
+                '}';
+    }
 }
