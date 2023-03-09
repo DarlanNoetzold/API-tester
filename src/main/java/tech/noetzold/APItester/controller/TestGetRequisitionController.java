@@ -15,7 +15,6 @@ import java.util.*;
 
 import tech.noetzold.APItester.model.TestGetRequisition;
 import tech.noetzold.APItester.model.Result;
-import tech.noetzold.APItester.model.User;
 import tech.noetzold.APItester.service.TestGetRequisitionService;
 import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.service.UserService;
@@ -66,7 +65,7 @@ public class TestGetRequisitionController {
             request.params(parameters);
         }
 
-        testGetRequisition.setResult(callTestsAndReturnResults(request,url,parameters, testGetRequisition));
+        testGetRequisition.setResult(callTestsAndReturnResults(request,url,parameters, testGetRequisition, headers));
 
         testGetRequisition.setUser(userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()));
 
@@ -75,7 +74,7 @@ public class TestGetRequisitionController {
         return ResponseEntity.status(HttpStatus.OK).body(testGetRequisition);
     }
 
-    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, String> params, TestGetRequisition testGetRequisition){
+    private List<Result> callTestsAndReturnResults(RequestSpecification request, String url, Map<String, String> params, TestGetRequisition testGetRequisition, Map<String, String> headers){
         List<Result> testsResults = new ArrayList<>();
 
         SecurityTest securityTest = new SecurityTest();
@@ -95,6 +94,10 @@ public class TestGetRequisitionController {
 
         SendToGPT3 sendToGPT3Test = new SendToGPT3(testGetRequisition);
         testsResults.add(resultService.saveService(sendToGPT3Test.doGptGetTest()));
+
+        PerformanceTest performanceTest = new PerformanceTest(testGetRequisition);
+        List<Result> performanceTestResults = performanceTest.runGetTests(1, 100, params, headers);
+        for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
 
         return testsResults;
 
