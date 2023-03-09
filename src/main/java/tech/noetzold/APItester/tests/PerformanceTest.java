@@ -20,27 +20,27 @@ public class PerformanceTest {
         this.testPostRequisition = testPostRequisition;
     }
 
-    public List<Result> runTests(int numTests, int numRequestsPerTest, RequestSpecification request, Map<String,Object> body, Map<String, String> headers) {
+    public List<Result> runTests(int numTests, int numRequestsPerTest, Map<String,Object> body, Map<String, String> headers) {
         List<Result> results = new ArrayList<>();
 
         for (int i = 0; i < numTests; i++) {
-            Result result = runTest(numRequestsPerTest, request, body, headers);
+            Result result = runTest(numRequestsPerTest, body, headers);
             results.add(result);
         }
 
         return results;
     }
 
-    private Result runTest(int numRequests, RequestSpecification request, Map<String,Object> body, Map<String, String> headers) {
+    private Result runTest(int numRequests, Map<String,Object> body, Map<String, String> headers) {
 
-        Response response = request
+        Response response = RestAssured.given()
                 .headers(headers)
                 .body(body)
                 .when()
                 .post(testPostRequisition.getUrl());
 
-        if (response.getStatusCode() != 200) {
-            throw new RuntimeException("API returned status code " + response.getStatusCode());
+        if (response.getStatusCode() < 200 || response.getStatusCode() >= 300) {
+            return new Result(TEST_TYPE.PERFORMANCE, "Error " + response.getStatusCode() + " by header " + response.getHeaders() + " by body " + response.getBody());
         }
 
         long responseTime = response.getTime();
@@ -49,7 +49,7 @@ public class PerformanceTest {
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < numRequests; i++) {
-            request.headers(headers).body(body).when().post(testPostRequisition.getUrl());
+            RestAssured.given().headers(headers).body(body).when().post(testPostRequisition.getUrl());
         }
         long end = System.currentTimeMillis();
         double requestsPerSecond = numRequests / ((end - start) / 1000.0);
