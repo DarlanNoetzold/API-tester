@@ -36,8 +36,10 @@ public class TestDeleteRequisition implements Serializable {
     @OneToMany(cascade=CascadeType.PERSIST)
     private List<Result> result;
 
+    @Column(name = "is_online", nullable = true)
     private boolean isOnline;
 
+    @Column(name = "gpt_key", nullable = true)
     private String gptKey;
 
     public TestDeleteRequisition(Map<String, String> parameters, Calendar date_request, List<Result> result, User user) {

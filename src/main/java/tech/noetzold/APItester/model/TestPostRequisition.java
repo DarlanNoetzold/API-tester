@@ -24,16 +24,20 @@ public class TestPostRequisition {
     private String headers;
 
     @Temporal(TemporalType.DATE)
-    @Column(name = "date_request", nullable = false)
+    @Column(name = "date_request", nullable = true)
     private Calendar date_request;
 
     @ManyToOne
     private User user;
+
+    @Column(name = "result", nullable = true)
     @OneToMany(cascade=CascadeType.PERSIST)
     private List<Result> result;
 
+    @Column(name = "is_online", nullable = true)
     private boolean isOnline;
 
+    @Column(name = "gpt_key", nullable = true)
     private String gptKey;
 
     public TestPostRequisition(Map<String, Object> body, Calendar date_request, List<Result> result, User user) {
