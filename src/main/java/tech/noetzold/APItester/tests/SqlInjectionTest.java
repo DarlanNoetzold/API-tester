@@ -9,6 +9,7 @@ import tech.noetzold.APItester.util.TEST_TYPE;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class SqlInjectionTest extends BaseTest {
@@ -48,16 +49,14 @@ public class SqlInjectionTest extends BaseTest {
     public Result testPostSqlInjection(RequestSpecification request, String url, Map<String,Object> body, Map<String, String> headers) {
         if (body == null) return null;
         String payload = "' or 1=1 --";
-        try {
-            payload = URLEncoder.encode(payload, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        payload = URLEncoder.encode(payload, StandardCharsets.ISO_8859_1);
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
 
         for (Map.Entry<String, Object> pair : body.entrySet()) {
-            uriBuilder.queryParam(pair.getKey(), payload);
+            if(pair.getValue() instanceof String) {
+                uriBuilder.queryParam(pair.getKey(), payload);
+            }
             Response response = request.body(body)
                     .headers(headers)
                     .post(uriBuilder.toUriString())
