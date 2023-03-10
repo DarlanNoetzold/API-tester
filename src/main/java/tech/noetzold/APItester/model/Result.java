@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import tech.noetzold.APItester.util.TEST_TYPE;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
@@ -26,6 +23,7 @@ public class Result implements Serializable {
     private TEST_TYPE test_type;
 
     @NotNull
+    @Lob
     private String details;
 
 
