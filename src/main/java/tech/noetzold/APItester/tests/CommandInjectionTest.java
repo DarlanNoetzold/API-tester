@@ -62,4 +62,8 @@ public class CommandInjectionTest extends BaseTest{
 
         return success(TEST_TYPE.COMMAND_INJECTION);
     }
+
+    public Result testPutCommandInjection(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
+        return testPostCommandInjection(request, url, body, headers);
+    }
 }
