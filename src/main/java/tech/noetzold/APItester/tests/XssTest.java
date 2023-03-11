@@ -66,4 +66,7 @@ public class XssTest extends BaseTest {
         return success(TEST_TYPE.XSS_INJECTION);
     }
 
+    public Result testPutXss(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
+        return testPostXss(request, url, body, headers);
+    }
 }
