@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import tech.noetzold.APItester.model.Result;
 import tech.noetzold.APItester.model.TestGetRequisition;
 import tech.noetzold.APItester.model.TestPostRequisition;
+import tech.noetzold.APItester.model.TestPutRequisition;
 import tech.noetzold.APItester.util.TEST_TYPE;
 
 import java.util.HashMap;
@@ -17,12 +18,18 @@ public class SendToGPT3 {
 
     private TestGetRequisition testGetRequisition;
 
+    private TestPutRequisition testPutRequisition;
+
     public SendToGPT3(TestPostRequisition testPostRequisition) {
         this.testPostRequisition = testPostRequisition;
     }
 
     public SendToGPT3(TestGetRequisition testGetRequisition) {
         this.testGetRequisition = testGetRequisition;
+    }
+
+    public SendToGPT3(TestPutRequisition testPutRequisition) {
+        this.testPutRequisition = testPutRequisition;
     }
 
     public Result doGptGetTest(){
@@ -59,5 +66,9 @@ public class SendToGPT3 {
                 .response();
 
         return new Result(TEST_TYPE.GPT3, responseTestGetGPT.getBody().toString());
+    }
+
+    public Result doGptPutTest() {
+        return doGptPostTest();
     }
 }
