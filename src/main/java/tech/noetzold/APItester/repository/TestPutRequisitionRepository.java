@@ -7,5 +7,5 @@ import tech.noetzold.APItester.model.TestPutRequisition;
 import tech.noetzold.APItester.model.User;
 
 public interface TestPutRequisitionRepository extends JpaRepository<TestPutRequisition, Integer> {
-    Page<TestPutRequisition> findByUser(Pageable pageable, User user);
+    Page<TestPutRequisition> findByUser(Pageable pageable, String login);
 }
