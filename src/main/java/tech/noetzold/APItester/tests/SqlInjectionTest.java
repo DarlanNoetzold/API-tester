@@ -83,4 +83,7 @@ public class SqlInjectionTest extends BaseTest {
     }
 
 
+    public Result testPutSqlInjection(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
+        return testPostSqlInjection(request, url, body, headers);
+    }
 }
