@@ -84,4 +84,8 @@ public class SecurityTest extends BaseTest{
         this.username = "user";
         this.weakPasswords = Arrays.asList("123456", "password", "12345678", "qwerty", "12345", "123456789", "letmein", "1234567", "football", "iloveyou", "admin", "welcome", "monkey", "login", "abc123", "starwars", "123123", "dragon", "passw0rd", "master", "hello", "freedom", "whatever", "qazwsx", "trustno1", "654321", "jordan23", "harley", "password1", "1234");
     }
+
+    public Result testPutSecureResponse(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
+        return testPostSecureResponse(request, url, body, headers);
+    }
 }
