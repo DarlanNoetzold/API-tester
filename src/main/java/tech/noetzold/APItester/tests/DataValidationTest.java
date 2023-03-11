@@ -61,4 +61,8 @@ public class DataValidationTest extends BaseTest {
         }
         return success(TEST_TYPE.DATA_VALIDATION);
     }
+
+    public Result testPutDataValidation(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
+        return testPostDataValidation(request, url, body, headers);
+    }
 }
