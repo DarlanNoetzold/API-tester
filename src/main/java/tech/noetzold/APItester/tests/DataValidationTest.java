@@ -65,4 +65,7 @@ public class DataValidationTest extends BaseTest {
     public Result testPutDataValidation(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
         return testPostDataValidation(request, url, body, headers);
     }
+
+    public Result testDeleteDataValidation(String url, RequestSpecification request, Map<String, String> params) {
+    }
 }
