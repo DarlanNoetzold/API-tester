@@ -2,10 +2,7 @@ package tech.noetzold.APItester.tests;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-import tech.noetzold.APItester.model.Result;
-import tech.noetzold.APItester.model.TestGetRequisition;
-import tech.noetzold.APItester.model.TestPostRequisition;
-import tech.noetzold.APItester.model.TestPutRequisition;
+import tech.noetzold.APItester.model.*;
 import tech.noetzold.APItester.util.TEST_TYPE;
 
 import java.util.HashMap;
@@ -20,6 +17,8 @@ public class SendToGPT3 {
 
     private TestPutRequisition testPutRequisition;
 
+    private TestDeleteRequisition testDeleteRequisition;
+
     public SendToGPT3(TestPostRequisition testPostRequisition) {
         this.testPostRequisition = testPostRequisition;
     }
@@ -31,6 +30,11 @@ public class SendToGPT3 {
     public SendToGPT3(TestPutRequisition testPutRequisition) {
         this.testPutRequisition = testPutRequisition;
     }
+
+    public SendToGPT3(TestDeleteRequisition testDeleteRequisition) {
+        this.testDeleteRequisition = testDeleteRequisition;
+    }
+
 
     public Result doGptGetTest(){
         Map<String, String> bodyToSendRequest = new HashMap<>();
@@ -69,6 +73,38 @@ public class SendToGPT3 {
     }
 
     public Result doGptPutTest() {
-        return doGptPostTest();
+        Map<String, String> bodyToSendRequest = new HashMap<>();
+
+        bodyToSendRequest.put("url", this.testPostRequisition.getUrl());
+        bodyToSendRequest.put("typeReq", "PUT");
+        bodyToSendRequest.put("headers", this.testPostRequisition.getHeaders());
+        bodyToSendRequest.put("body", this.testPostRequisition.getBody());
+        bodyToSendRequest.put("apyKey", this.testPostRequisition.getGptKey());
+
+
+
+        Response responseTestGetGPT = RestAssured.given().body(bodyToSendRequest).post("http://localhost:5000/gptTest").then()
+                .extract()
+                .response();
+
+        return new Result(TEST_TYPE.GPT3, responseTestGetGPT.getBody().toString());
+    }
+
+    public Result doGptDeleteTest() {
+        Map<String, String> bodyToSendRequest = new HashMap<>();
+
+        bodyToSendRequest.put("url", this.testPostRequisition.getUrl());
+        bodyToSendRequest.put("typeReq", "DELETE");
+        bodyToSendRequest.put("headers", this.testPostRequisition.getHeaders());
+        bodyToSendRequest.put("body", this.testPostRequisition.getBody());
+        bodyToSendRequest.put("apyKey", this.testPostRequisition.getGptKey());
+
+
+
+        Response responseTestGetGPT = RestAssured.given().body(bodyToSendRequest).post("http://localhost:5000/gptTest").then()
+                .extract()
+                .response();
+
+        return new Result(TEST_TYPE.GPT3, responseTestGetGPT.getBody().toString());
     }
 }
