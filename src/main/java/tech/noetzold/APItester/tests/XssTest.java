@@ -69,4 +69,7 @@ public class XssTest extends BaseTest {
     public Result testPutXss(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
         return testPostXss(request, url, body, headers);
     }
+
+    public Result testDeleteXss(String url, RequestSpecification request, Map<String, String> params) {
+    }
 }
