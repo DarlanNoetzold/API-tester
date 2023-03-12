@@ -64,6 +64,55 @@ public class CommandInjectionTest extends BaseTest{
     }
 
     public Result testPutCommandInjection(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
-        return testPostCommandInjection(request, url, body, headers);
+        if (body == null) return null;
+        String payload = "||ls";
+
+        for (Map.Entry<String, Object> pair : body.entrySet()){
+            pair.setValue(payload);
+            Response response = request
+                    .when()
+                    .body(body)
+                    .headers(headers)
+                    .put(url)
+                    .then()
+                    .extract()
+                    .response();
+
+            String responseBody = response.getBody().asString();
+            int statusCode = response.getStatusCode();
+            if (responseBody.contains(payload)) {
+                return fail(TEST_TYPE.COMMAND_INJECTION, "Command injection vulnerability found in parameter " + body.toString() + " with payload " + payload);
+            }
+            if (statusCode >= 500) {
+                return fail(TEST_TYPE.COMMAND_INJECTION, "Server error: " + statusCode);
+            }
+        }
+
+        return success(TEST_TYPE.COMMAND_INJECTION);
+    }
+
+    public Result testDeleteCommandInjection(String url, RequestSpecification request, Map<String, String> params) {
+        if(params == null) return null;
+        String payload = "||ls";
+        for (Map.Entry<String,String> pair : params.entrySet())
+            pair.setValue(payload);
+        Response response = request
+                .params(params)
+                .when()
+                .delete(url)
+                .then()
+                .extract()
+                .response();
+
+        String responseBody = response.getBody().asString();
+        int statusCode = response.getStatusCode();
+        if (responseBody.contains(payload)) {
+            return fail(TEST_TYPE.COMMAND_INJECTION, "Command injection vulnerability found in parameter " + params.toString() + " with payload " + payload);
+        }
+        if (statusCode >= 500) {
+            return fail(TEST_TYPE.COMMAND_INJECTION, "Server error: " + statusCode);
+        }
+
+        return success(TEST_TYPE.COMMAND_INJECTION);
     }
 }
