@@ -86,6 +86,50 @@ public class SecurityTest extends BaseTest{
     }
 
     public Result testPutSecureResponse(RequestSpecification request, String url, Map<String, Object> body, Map<String, String> headers) {
-        return testPostSecureResponse(request, url, body, headers);
+        for(String weakPassword: this.weakPasswords) {
+            String token = Base64.getEncoder().encodeToString((this.username + ":" + weakPassword).getBytes());
+            Response responseBasic = request.header("Authorization", "Basic " + token)
+                    .when()
+                    .put(url);
+
+            Result resultBasicTests = testStatusCode(responseBasic.getStatusCode());
+
+            if(!("Success".equals(resultBasicTests.getDetails()))){
+                return resultBasicTests;
+            }
+
+            Response responseBearer = request.header("Authorization", "Bearer " + token)
+                    .when()
+                    .post(url);
+
+            return testStatusCode(responseBearer.getStatusCode());
+
+        }
+
+        return new Result(TEST_TYPE.SECURITY, "Success");
+    }
+
+    public Result testDeleteSecureResponse(RequestSpecification request, String url) {
+        for(String weakPassword: this.weakPasswords) {
+            String token = Base64.getEncoder().encodeToString((this.username + ":" + weakPassword).getBytes());
+            Response responseBasic = request.header("Authorization", "Basic " + token)
+                    .when()
+                    .delete(url);
+
+            Result resultBasicTests = testStatusCode(responseBasic.getStatusCode());
+
+            if(!("Success".equals(resultBasicTests.getDetails()))){
+                return resultBasicTests;
+            }
+
+            Response responseBearer = request.header("Authorization", "Bearer " + token)
+                    .when()
+                    .get(url);
+
+            return testStatusCode(responseBearer.getStatusCode());
+
+        }
+
+        return new Result(TEST_TYPE.SECURITY, "Success");
     }
 }
