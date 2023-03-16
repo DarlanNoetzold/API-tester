@@ -18,17 +18,11 @@ public class FullPerformanceTest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "test_post_requisition", nullable = true)
-    TestPostRequisition testPostRequisition;
+    private String parameters;
 
-    @Column(name = "test_delete_requisition", nullable = true)
-    TestDeleteRequisition testDeleteRequisition;
+    private String headers;
 
-    @Column(name = "test_put_requisition", nullable = true)
-    TestPutRequisition testPutRequisition;
-
-    @Column(name = "test_get_requisition", nullable = true)
-    TestGetRequisition testGetRequisition;
+    private String url;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "date_request", nullable = false)
@@ -39,4 +33,8 @@ public class FullPerformanceTest {
 
     @OneToMany(cascade=CascadeType.PERSIST)
     private List<Result> result;
+
+    private String body;
+
+    private String method;
 }
