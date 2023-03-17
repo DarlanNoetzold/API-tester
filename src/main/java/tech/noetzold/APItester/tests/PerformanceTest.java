@@ -123,7 +123,7 @@ public class PerformanceTest {
                 .headers(headers)
                 .body(body)
                 .when()
-                .put(testPostRequisition.getUrl());
+                .put(testPutRequisition.getUrl());
 
         if (response.getStatusCode() < 200 || response.getStatusCode() >= 300) {
             return new Result(TEST_TYPE.PERFORMANCE, "Error " + response.getStatusCode() + " by header " + response.getHeaders() + " by body " + response.getBody());
@@ -135,7 +135,7 @@ public class PerformanceTest {
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < numRequests; i++) {
-            RestAssured.given().headers(headers).body(body).when().post(testPostRequisition.getUrl());
+            RestAssured.given().headers(headers).body(body).when().post(testPutRequisition.getUrl());
         }
         long end = System.currentTimeMillis();
         double requestsPerSecond = numRequests / ((end - start) / 1000.0);
@@ -159,7 +159,7 @@ public class PerformanceTest {
                 .headers(headers)
                 .params(params)
                 .when()
-                .delete(testGetRequisition.getUrl());
+                .delete(testDeleteRequisition.getUrl());
 
         if (response.getStatusCode() < 200 || response.getStatusCode() >= 300) {
             return new Result(TEST_TYPE.PERFORMANCE, "Error " + response.getStatusCode() + " by header " + response.getHeaders() + " by body " + response.getBody());
@@ -171,7 +171,7 @@ public class PerformanceTest {
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < numRequestsPerTest; i++) {
-            RestAssured.given().headers(headers).params(params).when().post(testGetRequisition.getUrl());
+            RestAssured.given().headers(headers).params(params).when().post(testDeleteRequisition.getUrl());
         }
         long end = System.currentTimeMillis();
         double requestsPerSecond = numRequestsPerTest / ((end - start) / 1000.0);
