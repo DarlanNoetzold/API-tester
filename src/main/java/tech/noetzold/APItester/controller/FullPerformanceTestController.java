@@ -13,14 +13,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.noetzold.APItester.model.FullPerformanceTest;
+import tech.noetzold.APItester.model.Result;
+import tech.noetzold.APItester.model.TestPostRequisition;
 import tech.noetzold.APItester.service.FullPerformanceTestService;
 import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.service.TestGetRequisitionService;
 import tech.noetzold.APItester.service.UserService;
+import tech.noetzold.APItester.tests.*;
 import tech.noetzold.APItester.util.QueryStringParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,9 +34,6 @@ public class FullPerformanceTestController {
 
     @Autowired
     FullPerformanceTestService fullPerformanceTestService;
-
-    @Autowired
-    TestGetRequisitionService testGetRequisitionService;
 
     @Autowired
     ResultService resultService;
@@ -51,20 +53,9 @@ public class FullPerformanceTestController {
 
     @PostMapping("/test")
     public ResponseEntity<String> testPerformanceEndpoint(@RequestBody FullPerformanceTest fullPerformanceTest) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {};
-        try {
-            Map<String, Object> body = objectMapper.readValue(fullPerformanceTest.getBody(), typeRef);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        Map<String, String> headers = QueryStringParser.parseQueryString(fullPerformanceTest.getHeaders());
 
 
-        RequestSpecification requestSpecification = RestAssured.given()
-                .baseUri(fullPerformanceTest.getUrl())
-                .headers(headers)
-                .log().all();
+
 
         long startTime = System.currentTimeMillis();
         Response response = requestSpecification.request(fullPerformanceTest.getMethod(), fullPerformanceTest.getBody());
@@ -81,5 +72,38 @@ public class FullPerformanceTestController {
             // Caso contrário, retorne o status code e o body da resposta
             return ResponseEntity.status(response.getStatusCode()).body(response.getBody().asString());
         }
+    }
+
+    private List<Result> callPerformanceTestByRequestType(String url, FullPerformanceTest fullPerformanceTest){
+        List<Result> testsResults = new ArrayList<>();
+        try {
+            TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
+            };
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            Map<String, String> headers = QueryStringParser.parseQueryString(fullPerformanceTest.getHeaders());
+
+            Map<String, Object> body = objectMapper.readValue(fullPerformanceTest.getBody(), typeRef);
+            fullPerformanceTest.setMethod(fullPerformanceTest.getMethod().toUpperCase());
+            if("POST".equals(fullPerformanceTest.getMethod())){
+
+            }else if("GET".equals(fullPerformanceTest.getMethod())){
+
+            }else if("PUT".equals(fullPerformanceTest.getMethod())){
+
+            }else if("DELETE".equals(fullPerformanceTest.getMethod())){
+
+            }
+
+            PerformanceTest performanceTest = new PerformanceTest(fullPerformanceTest);
+            List<Result> performanceTestResults = performanceTest.runPostTests(1, 1, body, headers);
+            for (Result result : performanceTestResults) testsResults.add(resultService.saveService(result));
+
+            return testsResults;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return testsResults;
     }
 }
