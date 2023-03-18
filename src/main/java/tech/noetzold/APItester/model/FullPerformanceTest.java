@@ -37,4 +37,6 @@ public class FullPerformanceTest {
     private String body;
 
     private String method;
+
+    private int num_req;
 }
