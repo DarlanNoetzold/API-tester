@@ -1,23 +1,17 @@
 package tech.noetzold.APItester.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.restassured.RestAssured;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import tech.noetzold.APItester.model.FullPerformanceTest;
-import tech.noetzold.APItester.model.Result;
-import tech.noetzold.APItester.model.TestPostRequisition;
+import tech.noetzold.APItester.model.*;
 import tech.noetzold.APItester.service.FullPerformanceTestService;
 import tech.noetzold.APItester.service.ResultService;
-import tech.noetzold.APItester.service.TestGetRequisitionService;
 import tech.noetzold.APItester.service.UserService;
 import tech.noetzold.APItester.tests.*;
 import tech.noetzold.APItester.util.QueryStringParser;
@@ -52,52 +46,74 @@ public class FullPerformanceTestController {
     }
 
     @PostMapping("/test")
-    public ResponseEntity<String> testPerformanceEndpoint(@RequestBody FullPerformanceTest fullPerformanceTest) {
+    public ResponseEntity<FullPerformanceTest> testPerformanceEndpoint(@RequestBody FullPerformanceTest fullPerformanceTest) {
 
+        fullPerformanceTest.setResult(callPerformanceTestByRequestType(fullPerformanceTest));
 
+        FullPerformanceTest fullPerformanceTestResponse = fullPerformanceTestService.saveService(fullPerformanceTest);
 
-
-        long startTime = System.currentTimeMillis();
-        Response response = requestSpecification.request(fullPerformanceTest.getMethod(), fullPerformanceTest.getBody());
-        long endTime = System.currentTimeMillis();
-
-        long tempoResposta = endTime - startTime;
-
-        // Verifique se a resposta da outra API foi bem-sucedida (código 2xx ou 3xx)
-        if (HttpStatus.valueOf(response.getStatusCode()).is2xxSuccessful() ||
-                HttpStatus.valueOf(response.getStatusCode()).is3xxRedirection()) {
-            // Retorne os resultados em formato de String
-            return ResponseEntity.ok("Tempo de resposta da API: " + tempoResposta + "ms");
-        } else {
-            // Caso contrário, retorne o status code e o body da resposta
-            return ResponseEntity.status(response.getStatusCode()).body(response.getBody().asString());
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(fullPerformanceTestResponse);
     }
 
-    private List<Result> callPerformanceTestByRequestType(String url, FullPerformanceTest fullPerformanceTest){
+    private List<Result> callPerformanceTestByRequestType(FullPerformanceTest fullPerformanceTest){
         List<Result> testsResults = new ArrayList<>();
         try {
-            TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {
-            };
-            ObjectMapper objectMapper = new ObjectMapper();
-
             Map<String, String> headers = QueryStringParser.parseQueryString(fullPerformanceTest.getHeaders());
 
-            Map<String, Object> body = objectMapper.readValue(fullPerformanceTest.getBody(), typeRef);
             fullPerformanceTest.setMethod(fullPerformanceTest.getMethod().toUpperCase());
             if("POST".equals(fullPerformanceTest.getMethod())){
+                TestPostRequisition testPostRequisition = new TestPostRequisition();
+                testPostRequisition.setBody(fullPerformanceTest.getBody());
+                testPostRequisition.setUrl(fullPerformanceTest.getUrl());
+                testPostRequisition.setHeaders(fullPerformanceTest.getHeaders());
+                testPostRequisition.setUser(userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()));
 
+                PerformanceTest performanceTest = new PerformanceTest(testPostRequisition);
+                TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {};
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map<String, Object> body = objectMapper.readValue(fullPerformanceTest.getBody(), typeRef);
+
+                List<Result> performanceTestResults = performanceTest.runPostTests(1, fullPerformanceTest.getNum_req(), body, headers);
+                for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
             }else if("GET".equals(fullPerformanceTest.getMethod())){
+                TestGetRequisition testGetRequisition = new TestGetRequisition();
+                testGetRequisition.setUser(userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()));
+                testGetRequisition.setHeaders(fullPerformanceTest.getHeaders());
+                testGetRequisition.setParameters(fullPerformanceTest.getParameters());
+                testGetRequisition.setUrl(fullPerformanceTest.getUrl());
+                PerformanceTest performanceTest = new PerformanceTest(testGetRequisition);
 
+                Map<String, String> parameters = QueryStringParser.parseQueryString(testGetRequisition.getParameters());
+
+                List<Result> performanceTestResults = performanceTest.runGetTests(1, fullPerformanceTest.getNum_req(),parameters, headers);
+                for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
             }else if("PUT".equals(fullPerformanceTest.getMethod())){
+                TestPutRequisition testPutRequisition = new TestPutRequisition();
+                testPutRequisition.setBody(fullPerformanceTest.getBody());
+                testPutRequisition.setUrl(fullPerformanceTest.getUrl());
+                testPutRequisition.setHeaders(fullPerformanceTest.getHeaders());
+                testPutRequisition.setUser(userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()));
 
+                PerformanceTest performanceTest = new PerformanceTest(testPutRequisition);
+                TypeReference<Map<String, Object>> typeRef = new TypeReference<>() {};
+                ObjectMapper objectMapper = new ObjectMapper();
+                Map<String, Object> body = objectMapper.readValue(fullPerformanceTest.getBody(), typeRef);
+
+                List<Result> performanceTestResults = performanceTest.runPutTests(1, fullPerformanceTest.getNum_req(), body, headers);
+                for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
             }else if("DELETE".equals(fullPerformanceTest.getMethod())){
+                TestDeleteRequisition testDeleteRequisition = new TestDeleteRequisition();
+                testDeleteRequisition.setUser(userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()));
+                testDeleteRequisition.setHeaders(fullPerformanceTest.getHeaders());
+                testDeleteRequisition.setParameters(fullPerformanceTest.getParameters());
+                testDeleteRequisition.setUrl(fullPerformanceTest.getUrl());
+                PerformanceTest performanceTest = new PerformanceTest(testDeleteRequisition);
 
+                Map<String, String> parameters = QueryStringParser.parseQueryString(testDeleteRequisition.getParameters());
+
+                List<Result> performanceTestResults = performanceTest.runGetTests(1, fullPerformanceTest.getNum_req(),parameters, headers);
+                for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
             }
-
-            PerformanceTest performanceTest = new PerformanceTest(fullPerformanceTest);
-            List<Result> performanceTestResults = performanceTest.runPostTests(1, 1, body, headers);
-            for (Result result : performanceTestResults) testsResults.add(resultService.saveService(result));
 
             return testsResults;
         }catch (Exception e){
