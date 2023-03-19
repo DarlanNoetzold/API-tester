@@ -73,7 +73,7 @@ public class FullPerformanceTestController {
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map<String, Object> body = objectMapper.readValue(fullPerformanceTest.getBody(), typeRef);
 
-                List<Result> performanceTestResults = performanceTest.runPostTests(1, fullPerformanceTest.getNum_req(), body, headers);
+                List<Result> performanceTestResults = performanceTest.runPostTests(1, fullPerformanceTest.getNumReq(), body, headers);
                 for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
             }else if("GET".equals(fullPerformanceTest.getMethod())){
                 TestGetRequisition testGetRequisition = new TestGetRequisition();
@@ -85,7 +85,7 @@ public class FullPerformanceTestController {
 
                 Map<String, String> parameters = QueryStringParser.parseQueryString(testGetRequisition.getParameters());
 
-                List<Result> performanceTestResults = performanceTest.runGetTests(1, fullPerformanceTest.getNum_req(),parameters, headers);
+                List<Result> performanceTestResults = performanceTest.runGetTests(1, fullPerformanceTest.getNumReq(),parameters, headers);
                 for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
             }else if("PUT".equals(fullPerformanceTest.getMethod())){
                 TestPutRequisition testPutRequisition = new TestPutRequisition();
@@ -99,7 +99,7 @@ public class FullPerformanceTestController {
                 ObjectMapper objectMapper = new ObjectMapper();
                 Map<String, Object> body = objectMapper.readValue(fullPerformanceTest.getBody(), typeRef);
 
-                List<Result> performanceTestResults = performanceTest.runPutTests(1, fullPerformanceTest.getNum_req(), body, headers);
+                List<Result> performanceTestResults = performanceTest.runPutTests(1, fullPerformanceTest.getNumReq(), body, headers);
                 for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
             }else if("DELETE".equals(fullPerformanceTest.getMethod())){
                 TestDeleteRequisition testDeleteRequisition = new TestDeleteRequisition();
@@ -111,7 +111,7 @@ public class FullPerformanceTestController {
 
                 Map<String, String> parameters = QueryStringParser.parseQueryString(testDeleteRequisition.getParameters());
 
-                List<Result> performanceTestResults = performanceTest.runGetTests(1, fullPerformanceTest.getNum_req(),parameters, headers);
+                List<Result> performanceTestResults = performanceTest.runGetTests(1, fullPerformanceTest.getNumReq(),parameters, headers);
                 for (Result result: performanceTestResults) testsResults.add(resultService.saveService(result));
             }
 
