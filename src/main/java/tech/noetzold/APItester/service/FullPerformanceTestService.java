@@ -4,12 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import tech.noetzold.APItester.model.FullPerformanceTest;
 import tech.noetzold.APItester.model.User;
 import tech.noetzold.APItester.repository.FullPerformanceTestRepository;
 import tech.noetzold.APItester.repository.UserRepository;
 
-@Component
+@Service
 public class FullPerformanceTestService {
 
     @Autowired
