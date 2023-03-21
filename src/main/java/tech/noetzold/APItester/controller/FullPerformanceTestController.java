@@ -19,6 +19,7 @@ import tech.noetzold.APItester.util.QueryStringParser;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,8 @@ public class FullPerformanceTestController {
     public ResponseEntity<FullPerformanceTest> testPerformanceEndpoint(@RequestBody FullPerformanceTest fullPerformanceTest) {
 
         fullPerformanceTest.setResult(callPerformanceTestByRequestType(fullPerformanceTest));
+
+        fullPerformanceTest.setDate_request(Calendar.getInstance());
 
         FullPerformanceTest fullPerformanceTestResponse = fullPerformanceTestService.saveService(fullPerformanceTest);
 
