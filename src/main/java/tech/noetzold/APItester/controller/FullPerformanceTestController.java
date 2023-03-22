@@ -53,6 +53,8 @@ public class FullPerformanceTestController {
 
         fullPerformanceTest.setDate_request(Calendar.getInstance());
 
+        fullPerformanceTest.setUser(userService.findUserByLogin(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString()));
+
         FullPerformanceTest fullPerformanceTestResponse = fullPerformanceTestService.saveService(fullPerformanceTest);
 
         return ResponseEntity.status(HttpStatus.OK).body(fullPerformanceTestResponse);
