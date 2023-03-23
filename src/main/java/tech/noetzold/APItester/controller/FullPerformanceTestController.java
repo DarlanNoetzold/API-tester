@@ -60,6 +60,14 @@ public class FullPerformanceTestController {
         return ResponseEntity.status(HttpStatus.OK).body(fullPerformanceTestResponse);
     }
 
+    @PostMapping("/test/list")
+    public ResponseEntity<FullPerformanceTest> testPerformanceEndpointList(@RequestBody List<FullPerformanceTest> fullPerformanceTests) {
+
+        ;
+
+        return ResponseEntity.status(HttpStatus.OK).body(fullPerformanceTestResponse);
+    }
+
     private List<Result> callPerformanceTestByRequestType(FullPerformanceTest fullPerformanceTest){
         List<Result> testsResults = new ArrayList<>();
         try {
