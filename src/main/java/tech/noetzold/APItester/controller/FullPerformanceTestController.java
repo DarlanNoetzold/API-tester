@@ -2,13 +2,17 @@ package tech.noetzold.APItester.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import tech.noetzold.APItester.model.*;
 import tech.noetzold.APItester.service.FullPerformanceTestService;
 import tech.noetzold.APItester.service.ResultService;
@@ -18,10 +22,9 @@ import tech.noetzold.APItester.util.QueryStringParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/performance")
@@ -61,11 +64,77 @@ public class FullPerformanceTestController {
     }
 
     @PostMapping("/test/list")
-    public ResponseEntity<FullPerformanceTest> testPerformanceEndpointList(@RequestBody List<FullPerformanceTest> fullPerformanceTests) {
+    public void testPerformanceEndpointList(@RequestBody List<FullPerformanceTest> fullPerformanceTests) {
+        // Cria um mapa para armazenar as variáveis encontradas nas respostas das requisições anteriores
+        Map<String, Object> variableMap = new HashMap<>();
 
-        ;
+        // Percorre a lista de testes de performance
+        for (FullPerformanceTest fullPerformanceTest : fullPerformanceTests) {
+            // Realiza a substituição das variáveis no body, nos headers e nos parâmetros da URL
+            String requestBody = replaceVariables(fullPerformanceTest.getBody(), variableMap);
+            String requestHeaders = replaceVariables(fullPerformanceTest.getHeaders(), variableMap);
+            Map<String, String> headers = QueryStringParser.parseQueryString(requestHeaders);
 
-        return ResponseEntity.status(HttpStatus.OK).body(fullPerformanceTestResponse);
+            String requestUrl = replaceVariables(fullPerformanceTest.getUrl(), variableMap);
+
+            // Cria uma nova requisição com o RestAssured
+            RequestSpecification requestSpec = RestAssured.given()
+                    .headers(headers)
+                    .body(requestBody);
+
+            Response response;
+            // Verifica o método HTTP da requisição
+            String method = fullPerformanceTest.getMethod();
+            if (method.equalsIgnoreCase("get")) {
+                response = requestSpec.when().get(requestUrl);
+            } else if (method.equalsIgnoreCase("post")) {
+                response = requestSpec.when().post(requestUrl);
+            } else if (method.equalsIgnoreCase("put")) {
+                response = requestSpec.when().put(requestUrl);
+            } else if (method.equalsIgnoreCase("delete")) {
+                response = requestSpec.when().delete(requestUrl);
+            }else{
+                response = requestSpec.when().post(requestUrl);
+            }
+
+            String responseBody = response.getBody().asString();
+
+            // Percorre o corpo da resposta para verificar se existem novas variáveis
+            JsonPath jsonPath = new JsonPath(responseBody);
+            Map<String, Object> responseMap = jsonPath.getMap("");
+            for (Map.Entry<String, Object> entry : responseMap.entrySet()) {
+                Object value = entry.getValue();
+                if (value instanceof String && ((String) value).startsWith("{{") && ((String) value).endsWith("}}")) {
+                    String variableName = ((String) value).substring(2, ((String) value).length() - 2);
+                    if (!variableMap.containsKey(variableName)) {
+                        variableMap.put(variableName, entry.getValue());
+                    }
+                }
+            }
+        }
+    }
+
+    private static <T> T replaceVariables(T input, Map<String, Object> variableMap) {
+        if (input == null) {
+            return null;
+        }
+        String str = input.toString();
+        if (str.isEmpty()) {
+            return input;
+        }
+
+        Pattern pattern = Pattern.compile("\\{\\{([^}]+)\\}\\}");
+        Matcher matcher = pattern.matcher(str);
+
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String varName = matcher.group(1);
+            Object varValue = variableMap.get(varName);
+            String replacement = (varValue != null) ? varValue.toString() : "";
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+        }
+        matcher.appendTail(sb);
+        return (T) sb.toString();
     }
 
     private List<Result> callPerformanceTestByRequestType(FullPerformanceTest fullPerformanceTest){
