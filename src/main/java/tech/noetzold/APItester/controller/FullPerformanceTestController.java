@@ -65,25 +65,20 @@ public class FullPerformanceTestController {
 
     @PostMapping("/test/list")
     public void testPerformanceEndpointList(@RequestBody List<FullPerformanceTest> fullPerformanceTests) {
-        // Cria um mapa para armazenar as variáveis encontradas nas respostas das requisições anteriores
         Map<String, Object> variableMap = new HashMap<>();
 
-        // Percorre a lista de testes de performance
         for (FullPerformanceTest fullPerformanceTest : fullPerformanceTests) {
-            // Realiza a substituição das variáveis no body, nos headers e nos parâmetros da URL
             String requestBody = replaceVariables(fullPerformanceTest.getBody(), variableMap);
             String requestHeaders = replaceVariables(fullPerformanceTest.getHeaders(), variableMap);
             Map<String, String> headers = QueryStringParser.parseQueryString(requestHeaders);
 
             String requestUrl = replaceVariables(fullPerformanceTest.getUrl(), variableMap);
 
-            // Cria uma nova requisição com o RestAssured
             RequestSpecification requestSpec = RestAssured.given()
                     .headers(headers)
                     .body(requestBody);
 
             Response response;
-            // Verifica o método HTTP da requisição
             String method = fullPerformanceTest.getMethod();
             if (method.equalsIgnoreCase("get")) {
                 response = requestSpec.when().get(requestUrl);
@@ -98,18 +93,10 @@ public class FullPerformanceTestController {
             }
 
             String responseBody = response.getBody().asString();
-
-            // Percorre o corpo da resposta para verificar se existem novas variáveis
-            JsonPath jsonPath = new JsonPath(responseBody);
-            Map<String, Object> responseMap = jsonPath.getMap("");
-            for (Map.Entry<String, Object> entry : responseMap.entrySet()) {
-                Object value = entry.getValue();
-                if (value instanceof String && ((String) value).startsWith("{{") && ((String) value).endsWith("}}")) {
-                    String variableName = ((String) value).substring(2, ((String) value).length() - 2);
-                    if (!variableMap.containsKey(variableName)) {
-                        variableMap.put(variableName, entry.getValue());
-                    }
-                }
+            try {
+                variableMap.putAll(new JsonPath(responseBody).getMap(""));
+            }catch (Exception exception){
+                variableMap.put("token", responseBody);
             }
         }
     }
