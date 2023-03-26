@@ -63,67 +63,6 @@ public class FullPerformanceTestController {
         return ResponseEntity.status(HttpStatus.OK).body(fullPerformanceTestResponse);
     }
 
-    @PostMapping("/test/list")
-    public void testPerformanceEndpointList(@RequestBody List<FullPerformanceTest> fullPerformanceTests) {
-        Map<String, Object> variableMap = new HashMap<>();
-
-        for (FullPerformanceTest fullPerformanceTest : fullPerformanceTests) {
-            String requestBody = replaceVariables(fullPerformanceTest.getBody(), variableMap);
-            String requestHeaders = replaceVariables(fullPerformanceTest.getHeaders(), variableMap);
-            Map<String, String> headers = QueryStringParser.parseQueryString(requestHeaders);
-
-            String requestUrl = replaceVariables(fullPerformanceTest.getUrl(), variableMap);
-
-            RequestSpecification requestSpec = RestAssured.given()
-                    .headers(headers)
-                    .body(requestBody);
-
-            Response response;
-            String method = fullPerformanceTest.getMethod();
-            if (method.equalsIgnoreCase("get")) {
-                response = requestSpec.when().get(requestUrl);
-            } else if (method.equalsIgnoreCase("post")) {
-                response = requestSpec.when().post(requestUrl);
-            } else if (method.equalsIgnoreCase("put")) {
-                response = requestSpec.when().put(requestUrl);
-            } else if (method.equalsIgnoreCase("delete")) {
-                response = requestSpec.when().delete(requestUrl);
-            }else{
-                response = requestSpec.when().post(requestUrl);
-            }
-
-            String responseBody = response.getBody().asString();
-            try {
-                variableMap.putAll(new JsonPath(responseBody).getMap(""));
-            }catch (Exception exception){
-                variableMap.put("token", responseBody);
-            }
-        }
-    }
-
-    private static <T> T replaceVariables(T input, Map<String, Object> variableMap) {
-        if (input == null) {
-            return null;
-        }
-        String str = input.toString();
-        if (str.isEmpty()) {
-            return input;
-        }
-
-        Pattern pattern = Pattern.compile("\\{\\{([^}]+)\\}\\}");
-        Matcher matcher = pattern.matcher(str);
-
-        StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            String varName = matcher.group(1);
-            Object varValue = variableMap.get(varName);
-            String replacement = (varValue != null) ? varValue.toString() : "";
-            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
-        }
-        matcher.appendTail(sb);
-        return (T) sb.toString();
-    }
-
     private List<Result> callPerformanceTestByRequestType(FullPerformanceTest fullPerformanceTest){
         List<Result> testsResults = new ArrayList<>();
         try {
