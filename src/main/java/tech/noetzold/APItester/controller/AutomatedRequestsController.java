@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/automated")
-public class AutomatedRequests {
+public class AutomatedRequestsController {
 
     @Autowired
     FullPerformanceTestService fullPerformanceTestService;
