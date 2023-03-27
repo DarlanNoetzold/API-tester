@@ -19,8 +19,8 @@ public class FullPerformanceTestService {
     @Autowired
     UserRepository userRepository;
 
-    public FullPerformanceTest saveService(FullPerformanceTest testDeleteRequisition){
-        return fullPerformanceTestRepository.save(testDeleteRequisition);
+    public FullPerformanceTest saveService(FullPerformanceTest fullPerformanceTest){
+        return fullPerformanceTestRepository.save(fullPerformanceTest);
     }
 
     public Page<FullPerformanceTest> findByUser(Pageable pageable, String login){

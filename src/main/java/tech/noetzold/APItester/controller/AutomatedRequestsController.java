@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tech.noetzold.APItester.model.FullPerformanceTest;
-import tech.noetzold.APItester.service.FullPerformanceTestService;
+import tech.noetzold.APItester.model.CompleteRequest;
+import tech.noetzold.APItester.service.CompleteRequestService;
 import tech.noetzold.APItester.service.ResultService;
 import tech.noetzold.APItester.service.UserService;
 import tech.noetzold.APItester.util.QueryStringParser;
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 public class AutomatedRequestsController {
 
     @Autowired
-    FullPerformanceTestService fullPerformanceTestService;
+    CompleteRequestService completeRequestService;
 
     @Autowired
     ResultService resultService;
@@ -35,10 +35,10 @@ public class AutomatedRequestsController {
     UserService userService;
 
     @PostMapping("/test/list")
-    public void testPerformanceEndpointList(@RequestBody List<FullPerformanceTest> fullPerformanceTests) {
+    public void testPerformanceEndpointList(@RequestBody List<CompleteRequest> fullPerformanceTests) {
         Map<String, Object> variableMap = new HashMap<>();
 
-        for (FullPerformanceTest fullPerformanceTest : fullPerformanceTests) {
+        for (CompleteRequest fullPerformanceTest : fullPerformanceTests) {
             String requestBody = replaceVariables(fullPerformanceTest.getBody(), variableMap);
             String requestHeaders = replaceVariables(fullPerformanceTest.getHeaders(), variableMap);
             Map<String, String> headers = QueryStringParser.parseQueryString(requestHeaders);
