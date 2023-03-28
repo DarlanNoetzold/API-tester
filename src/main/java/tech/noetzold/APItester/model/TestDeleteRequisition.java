@@ -14,27 +14,13 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name="test_delete_requisition")
-public class TestDeleteRequisition implements Serializable {
+public class TestDeleteRequisition extends DefaultRequest implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String parameters;
-
-    private String headers;
-
-    private String url;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = "date_request", nullable = false)
-    private Calendar date_request;
-
-    @ManyToOne
-    private User user;
-
-    @OneToMany(cascade=CascadeType.PERSIST)
-    private List<Result> result;
 
     @Column(name = "is_online", nullable = true)
     private boolean isOnline;
@@ -44,8 +30,8 @@ public class TestDeleteRequisition implements Serializable {
 
     public TestDeleteRequisition(Map<String, String> parameters, Calendar date_request, List<Result> result, User user) {
         this.parameters = parameters.toString();
-        this.date_request = date_request;
-        this.result = result;
-        this.user = user;
+        this.setDate_request(date_request);
+        this.setResult(result);
+        this.setUser(user);
     }
 }
