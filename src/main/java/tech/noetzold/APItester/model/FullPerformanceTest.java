@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name="test_performance")
-public class FullPerformanceTest {
+public class FullPerformanceTest extends DefaultRequest implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,22 +21,6 @@ public class FullPerformanceTest {
 
     @Column(name = "parameters", nullable = true)
     private String parameters;
-
-    @Column(name = "headers", nullable = true)
-    private String headers;
-
-    @Column(name = "url", nullable = true)
-    private String url;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = "date_request", nullable = false)
-    private Calendar date_request;
-
-    @ManyToOne
-    private User user;
-
-    @OneToMany(cascade=CascadeType.PERSIST)
-    private List<Result> result;
 
     @Column(name = "body", nullable = true)
     private String body;
