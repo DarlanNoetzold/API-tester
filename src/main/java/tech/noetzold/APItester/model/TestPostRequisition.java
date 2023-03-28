@@ -13,26 +13,11 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name="test_post_requisition")
-public class TestPostRequisition {
+public class TestPostRequisition extends DefaultRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String body;
-
-    private String url;
-
-    private String headers;
-
-    @Temporal(TemporalType.DATE)
-    @Column(name = "date_request", nullable = true)
-    private Calendar date_request;
-
-    @ManyToOne
-    private User user;
-
-    @Column(name = "result", nullable = true)
-    @OneToMany(cascade=CascadeType.PERSIST)
-    private List<Result> result;
 
     @Column(name = "is_online", nullable = true)
     private boolean isOnline;
@@ -42,8 +27,8 @@ public class TestPostRequisition {
 
     public TestPostRequisition(Map<String, Object> body, Calendar date_request, List<Result> result, User user) {
         this.body = body.toString();
-        this.date_request = date_request;
-        this.result = result;
-        this.user = user;
+        this.setDate_request(date_request);
+        this.setResult(result);
+        this.setUser(user);
     }
 }
