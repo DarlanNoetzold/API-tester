@@ -5,7 +5,8 @@ Esta aplicação é uma API criada para testar outras API's, com testes de segur
 * Foi usado Java com SpringBoot;
 * Para segurança foi implementado um sistema de token como login;
 * Existem testes individuais para requisições POST, GET, DELETE e PUT;
-* Cada teste de requisição feita será salva em um banco PostgreSQL.
+* Cada teste de requisição feita será salva em um banco PostgreSQL;
+* Foi usado o RestAssured para fazer requisições com Web Template.
 
 ## Projeto:
 * O projeto conta com algumas funcionalidades relacionadas a testes de requisições;
