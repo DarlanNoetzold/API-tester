@@ -1,23 +1,23 @@
 # API-tester
-Esta aplicação é uma API criada para testar outras API's, com testes de seguraça, de performance e testes automatizados.
+This application is an API created to test other APIs, with security, performance and automated tests.
 
-## Desenvolvimento:
-* Foi usado Java com SpringBoot;
-* Para segurança foi implementado um sistema de token como login;
-* Existem testes individuais para requisições POST, GET, DELETE e PUT;
-* Cada teste de requisição feita será salva em um banco PostgreSQL;
-* Foi usado o RestAssured para fazer requisições com Web Template.
+## Development:
+* Java was used with SpringBoot;
+* For security, a token system was implemented as a login;
+* There are individual tests for POST, GET, DELETE and PUT requests;
+* Each test request made will be saved in a PostgreSQL database;
+* RestAssured was used to make requests with a Web Template.
 
-## Projeto:
-* O projeto conta com algumas funcionalidades relacionadas a testes de requisições;
-* Para teste de segurança existem testes de SQL Injection, Command Injection, XSS Injection, senhas fracas e validação de dados;
-* Existe uma integração com o GPT-3 para verificar problemas na API;
-* É possível fazer testes de performance com diversas requisições paralelas;
-* Também é possível automatizar testes, fazendo com que a aplicação envie diversas requisições para endpoints diferentes;
-* Nestes testes automatizados é possível definir variáveis que são alimentadas com as responses de outras requisições, facilitando a automatização.
+## Project:
+* The project has some features related to request testing;
+* For security testing there are SQL Injection, Command Injection, XSS Injection, weak passwords and data validation tests;
+* There is an integration with GPT-3 to check for API problems;
+* It is possible to carry out performance tests with several parallel requests;
+* It is also possible to automate tests, causing the application to send several requests to different endpoints;
+* In these automated tests it is possible to define variables that are fed with responses from other requests, facilitating automation.
 
-## Documentação do Postman:
-[Clique aqui](https://documenter.getpostman.com/view/16000387/2s93XsZnC7) para visualizar uma doc inicial das requisições para a API.
+## Postman documentation:
+[Click here](https://documenter.getpostman.com/view/16000387/2s93XsZnC7) to view an initial doc of requests for the API.
 
 ---
 ⭐️ From [DarlanNoetzold](https://github.com/DarlanNoetzold)
